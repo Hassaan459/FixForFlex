@@ -1,0 +1,101 @@
+/* Marks Watcher: Transcript page, in the shared theme.
+   Only loaded on /Student/Transcript, so the selectors can target FLEX's markup directly.
+   Restyling is pure CSS (styled from first paint); transcript.js only rewrites the credits/GPA line
+   under each semester name and marks pending grades. */
+html.mw-theme { --warn: #8a5a00; }
+html.mw-theme.mw-dark { --warn: #e0b154; }
+
+/* One semester per row, full width, stacked in FLEX's own order */
+html.mw-theme .m-section__content > .row { display: block !important; margin: 0 !important; }
+html.mw-theme .m-section__content > .row > .col-md-6 {
+  max-width: none !important; width: 100% !important; flex: none !important; padding: 0 !important; margin: 0 0 36px !important;
+}
+html.mw-theme .m-section__content > .row > .col-md-6:last-child { margin-bottom: 0 !important; }
+
+/* Semester header: name on the left, figures on the right */
+html.mw-theme .m-section__content .col-md-6 > .row:first-child {
+  display: flex !important; align-items: flex-end; justify-content: space-between; gap: 16px; margin: 0 0 12px !important;
+}
+html.mw-theme .m-section__content .col-md-6 > .row:first-child > div { max-width: none !important; flex: none !important; width: auto !important; padding: 0 !important; }
+html.mw-theme .m-section__content .col-md-6 > .row:first-child h5 { color: var(--ink) !important; font-size: 20px !important; font-weight: 700 !important; margin: 0 !important; white-space: nowrap; }
+html.mw-theme .m-section__content .pull-right { float: none !important; font-size: 13px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+/* The name/notes side takes the free space and wraps; the figures keep their place on the right */
+html.mw-theme .m-section__content .col-md-6 > .row:first-child { flex-wrap: nowrap !important; }
+html.mw-theme .m-section__content .col-md-6 > .row:first-child > div:first-child { flex: 1 1 0 !important; min-width: 0; }
+html.mw-theme .m-section__content .col-md-6 > .row:first-child > div:last-child { flex: none !important; }
+html.mw-theme .mw-ts-notes { margin-top: 4px; }
+html.mw-theme .mw-ts-note { font-size: 13.5px; font-weight: 600; color: var(--warn); }
+html.mw-theme .mw-ts-target-line { margin-top: 2px; font-size: 13.5px; color: var(--ink-2); }
+html.mw-theme .mw-ts-target-line b { color: var(--ink); font-weight: 700; font-variant-numeric: tabular-nums; }
+
+/* Figures: small label above a bold value */
+html.mw-theme .mw-ts-figs { display: flex; gap: 28px; text-align: right; }
+html.mw-theme .mw-ts-fig small {
+  display: block; font-size: 11px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 2px;
+}
+html.mw-theme .mw-ts-fig b { font-family: var(--serif) !important; font-size: 20px; font-weight: 800; color: var(--ink); font-variant-numeric: tabular-nums; }
+html.mw-theme .mw-ts-fig.mw-ts-pending b { color: var(--warn); font-size: 15px; font-weight: 700; }
+html.mw-theme .mw-ts-fig.mw-ts-whatif small { color: var(--warn); }
+/* CGPA change from the previous semester, under the value */
+html.mw-theme .mw-ts-delta { display: block; font-style: normal; font-size: 12px; font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; margin-top: 1px; }
+html.mw-theme .mw-ts-delta.mw-up { color: var(--good); }
+html.mw-theme .mw-ts-delta.mw-down { color: var(--bad); }
+html.mw-theme .mw-ts-figs { align-items: flex-start; }
+
+/* Small inline pickers: what-if grade and target CGPA */
+html.mw-theme select.mw-ts-pick, html.mw-theme select.mw-ts-target {
+  appearance: auto; height: 26px; padding: 0 4px; border: 1px solid var(--rule-2) !important; border-radius: 2px;
+  background: var(--paper) !important; color: var(--warn) !important; font: 600 13px/1 var(--sans) !important; cursor: pointer;
+}
+html.mw-theme select.mw-ts-pick.mw-picked { color: var(--ink) !important; border-color: var(--warn) !important; }
+html.mw-theme input.mw-ts-target {
+  width: 52px; height: 24px; padding: 0 6px; margin: 0 2px; border: 1px solid var(--rule-2) !important; border-radius: 2px;
+  background: var(--paper) !important; color: var(--ink) !important; font: 700 13.5px/1 var(--sans) !important;
+  text-align: center; font-variant-numeric: tabular-nums;
+}
+html.mw-theme input.mw-ts-target:focus { border-color: var(--navy) !important; outline: none !important; }
+html.mw-theme input.mw-ts-target.mw-bad { border-color: var(--bad) !important; color: var(--bad) !important; }
+html.mw-theme .mw-ts-target-tail { color: var(--ink-2); }
+html.mw-theme .m-section__content .table td.mw-ts-whatif-pt { color: var(--warn) !important; }
+
+/* Course table: outlined box with the shared strong shadow */
+html.mw-theme .m-section__content .table {
+  table-layout: auto; border: 1px solid var(--rule-2) !important; border-collapse: separate !important; border-spacing: 0;
+  border-radius: 2px; overflow: hidden; box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22);
+}
+html.mw-theme.mw-dark .m-section__content .table { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme .m-section__content .table th { white-space: nowrap; }
+html.mw-theme .m-section__content .table td { padding: 9px 14px !important; }
+/* Code and course name read left to right; the course name takes the spare width */
+html.mw-theme .m-section__content .table td:nth-child(2), html.mw-theme .m-section__content .table th:nth-child(2) { text-align: left !important; width: 100%; }
+html.mw-theme .m-section__content .table td:first-child { font-family: var(--mono) !important; font-size: 13.5px; white-space: nowrap; color: var(--ink-2) !important; }
+html.mw-theme .m-section__content .table td:nth-child(3) { white-space: nowrap; color: var(--ink-2) !important; }
+html.mw-theme .m-section__content .table td:nth-child(5) { font-weight: 700; }
+html.mw-theme .m-section__content .table td:nth-child(7), html.mw-theme .m-section__content .table td:nth-child(8) { white-space: nowrap; color: var(--ink-3) !important; font-size: 13.5px; }
+
+/* Low and failing grades */
+html.mw-theme .m-section__content .table td.mw-ts-f { color: var(--bad) !important; }
+/* Grade not out yet ("I"): say so, and don't show a 0 that looks like a real score */
+html.mw-theme .m-section__content .table td.mw-ts-i { color: var(--warn) !important; font-weight: 600; font-size: 13.5px; }
+html.mw-theme .m-section__content .table td.mw-ts-dash { color: var(--ink-3) !important; }
+
+/* Student info strip (ARN, roll no, name, batch): readable in dark mode too */
+html.mw-theme .m-content > .row .m-portlet__body span { color: var(--ink) !important; }
+html.mw-theme .m-content > .row .m-portlet__body .m--font-boldest { color: var(--ink-3) !important; font-weight: 600 !important; }
+
+/* Retake what-if: past grades look like plain bold text until you hover them */
+html.mw-theme select.mw-ts-retake {
+  appearance: none; -webkit-appearance: none; height: 24px; padding: 0 6px; border: 1px solid transparent !important; border-radius: 2px;
+  background: transparent !important; color: inherit !important; font: 700 14px/1 var(--sans) !important; text-align: center; cursor: pointer;
+}
+html.mw-theme select.mw-ts-retake:hover, html.mw-theme select.mw-ts-retake:focus { border-color: var(--rule-2) !important; }
+html.mw-theme select.mw-ts-retake.mw-picked { color: var(--warn) !important; border-color: var(--warn) !important; }
+html.mw-theme select.mw-ts-retake option { color: var(--ink); background: var(--paper); }
+
+/* Standing tags */
+html.mw-theme .mw-ts-tag {
+  display: inline-block; padding: 2px 8px; border: 1px solid currentColor; border-radius: 2px;
+  font-size: 11.5px; font-weight: 700; letter-spacing: .05em; text-transform: uppercase;
+}
+html.mw-theme .mw-ts-tag-good { color: var(--good); }
+html.mw-theme .mw-ts-tag-bad { color: var(--bad); }

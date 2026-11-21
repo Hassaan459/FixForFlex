@@ -1,0 +1,99 @@
+/* Marks Watcher: marks page pieces, in the Academic print style. */
+.mw-hide { display: none !important; }
+.mw-absent { color: var(--bad) !important; font-weight: 600; }
+.mw-sum { margin-left: auto; font-family: var(--sans) !important; font-size: 15px; font-weight: 400; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+.mw-sum b { font-weight: 600; color: var(--ink) !important; }
+.mw-of { color: var(--ink-3) !important; font-weight: 400; }
+
+/* Grand total: a printed statement line between rules, not a row of tiles */
+.mw-stats {
+  display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; align-items: end;
+  border-top: 1px solid var(--ink-2); border-bottom: 3px double var(--rule-2); padding: 16px 0 18px;
+}
+.mw-stat { padding: 0 22px; border-left: 1px solid var(--rule); }
+.mw-stat:first-child { padding-left: 0; border-left: 0; }
+.mw-k { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.mw-v { font-family: var(--serif) !important; font-weight: 800; letter-spacing: -.02em; font-size: 26px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; }
+.mw-v * { font-family: inherit !important; }
+.mw-stat-main .mw-v { font-size: 44px; letter-spacing: -.01em; }
+.mw-v .mw-of { font-size: .5em; font-weight: 600; }
+.mw-n { font-size: 13px; color: var(--ink-2); margin-top: 6px; }
+.mw-up { color: var(--good) !important; } .mw-down { color: var(--bad) !important; }
+.mw-dim .mw-v { color: var(--ink-3); }
+.mw-note .mw-n { max-width: 46ch; line-height: 1.5; }
+@media (max-width: 900px) { .mw-stats { grid-template-columns: 1fr 1fr; row-gap: 18px; } .mw-stat:nth-child(3) { border-left: 0; padding-left: 0; } }
+/* Font overrides need the theme scope to beat the base font rule */
+html.mw-theme .card-header .btn-link .mw-sec-name { font-family: var(--serif) !important; font-weight: 600; }
+html.mw-theme .mw-k { font-family: var(--serif) !important; }
+html.mw-theme .mw-v, html.mw-theme .mw-v * { font-family: var(--serif) !important; }
+html.mw-theme .mw-sum, html.mw-theme .mw-sum * { font-family: var(--sans) !important; }
+.mw-closed { display: none !important; }
+/* The header divider lives inside the sliding body, so it moves with the animation instead of flashing */
+html.mw-theme .card .card-header .btn-link, html.mw-theme .card .card-header .btn-link:focus,
+html.mw-theme .card .card-header .btn-link:active { border-bottom: 0 !important; box-shadow: none !important; outline: 0 !important; }
+html.mw-theme .card > .card-header + div { border-top: 1px solid var(--rule); }
+html.mw-theme .card.mw-grand .mw-stats { border-top: 0 !important; }
+
+
+/* ===== Round 2 (marks page only): transcript's amber accent, square corners, clear grouping ===== */
+html.mw-theme { --accent: #8a5a00; --accent-wash: rgba(138, 90, 0, .06); }
+html.mw-theme.mw-dark { --accent: #e0b154; --accent-wash: rgba(224, 177, 84, .07); }
+
+/* Semester picker: same box, border and type as the page, no browser chrome */
+html.mw-theme select#SemId {
+  -webkit-appearance: none; appearance: none; cursor: pointer;
+  min-width: 180px; height: 38px; padding: 0 40px 0 14px !important;
+  background-color: var(--paper) !important; color: var(--ink) !important;
+  border: 1px solid var(--rule-2) !important; border-radius: 0 !important; box-shadow: none !important;
+  font-size: 14px !important; font-weight: 600 !important;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23888' stroke-width='2.5' stroke-linecap='square'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") !important;
+  background-repeat: no-repeat !important; background-position: right 13px center !important;
+}
+html.mw-theme select#SemId:hover { border-color: var(--ink-3) !important; }
+html.mw-theme select#SemId:focus { border-color: var(--accent) !important; outline: 0 !important; }
+html.mw-theme select#SemId option { background: var(--paper); color: var(--ink); }
+
+/* No rounding anywhere on this page */
+html.mw-theme body .tab-pane .card, html.mw-theme body .m-portlet, html.mw-theme body .tab-pane .table { border-radius: 0 !important; }
+
+/* Accent: active course tab and the grand total figure */
+html.mw-theme body .m-tabs-line .m-tabs__link.active, html.mw-theme body .nav-tabs .nav-link.active { color: var(--accent) !important; border-bottom-color: var(--accent) !important; }
+html.mw-theme .card.mw-grand .mw-stat-main .mw-v { color: var(--accent); }
+html.mw-theme .card.mw-grand .mw-stat-main .mw-v .mw-of { color: var(--ink-3) !important; }
+html.mw-theme .card.mw-grand .card-header .btn-link:hover { background: transparent !important; }
+
+/* Grouping: Grand total stands apart, every other section has the same gap */
+html.mw-theme .tab-pane .card { margin: 0 0 12px !important; }
+html.mw-theme .tab-pane .card.mw-grand { margin: 0 0 32px !important; }
+html.mw-theme .tab-pane .card:last-child { margin-bottom: 0 !important; }
+
+/* Percentage after each total, warning tint when under 50% */
+.mw-pct { display: inline-block; min-width: 3.2em; margin-left: 12px; text-align: right; font-size: 13px; font-weight: 600; color: var(--ink-3); font-variant-numeric: tabular-nums; }
+.mw-pct-low { color: var(--bad) !important; }
+
+/* Less empty space */
+html.mw-theme .m-portlet .m-portlet__body { padding: 24px 28px 24px !important; }
+html.mw-theme .tab-pane > #accordion > h5, html.mw-theme .tab-pane > h5 { margin-bottom: 16px !important; }
+html.mw-theme .m-content { padding-bottom: 32px !important; }
+
+/* Grand total header reads as the headline */
+html.mw-theme .card.mw-grand .card-header .btn-link { padding-top: 18px !important; padding-bottom: 18px !important; }
+html.mw-theme .card.mw-grand .card-header .btn-link .mw-sec-name { font-size: 20px !important; font-weight: 700 !important; }
+html.mw-theme .card.mw-grand .mw-sum { font-size: 18px; }
+html.mw-theme .card.mw-grand .mw-sum b { font-size: 22px; font-weight: 800; }
+/* Course title one step below "Student Marks" */
+html.mw-theme body .tab-pane > #accordion > h5, html.mw-theme body .tab-pane > h5 { font-size: 19px !important; font-weight: 600 !important; color: var(--ink-2) !important; }
+
+/* Semester picker sits in the top header, centred above the marks panel */
+html.mw-theme .m-header .mw-sem-box { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); z-index: 3; }
+html.mw-theme form.mw-sem-form { margin: 0 !important; display: block; }
+html.mw-theme form.mw-sem-form .row { margin: 0 !important; display: block; }
+html.mw-theme form.mw-sem-form .row > div { padding: 0 !important; text-align: left !important; flex: none; max-width: none; width: auto; }
+html.mw-theme body select#SemId { min-width: 150px; height: 34px; font-size: 13.5px !important; }
+/* "Marks" was shown twice: drop the top-bar title on this page, the panel already says it */
+html.mw-theme .m-header .m-subheader__title { visibility: hidden !important; }
+/* Grand total: the score sits in the header while closed; when opened it slides out of the header
+   and is shown in the panel with the other figures, so it never appears twice. */
+html.mw-theme .card.mw-grand .card-header .mw-sum { transition: opacity .25s ease, transform .25s ease; }
+html.mw-theme .card.mw-grand .card-header .btn-link:not(.collapsed) .mw-sum { opacity: 0; transform: translateX(12px); pointer-events: none; }
+html.mw-theme .card.mw-grand .mw-stats.mw-stats-raw { grid-template-columns: 1.5fr 1fr 2fr; }

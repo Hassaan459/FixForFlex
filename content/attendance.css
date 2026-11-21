@@ -1,0 +1,60 @@
+/* Marks Watcher: attendance page pieces, in the Academic print style.
+   Everything that restyles FLEX's own markup is pure CSS (no classes added by script), so the page
+   is styled from the first paint and never flashes the old look. Only the summary line comes from attendance.js. */
+html.mw-theme { --warn: #8a5a00; }
+html.mw-theme.mw-dark { --warn: #e0b154; }
+
+/* Tabs: no focus box after clicking; the underline already marks the open course */
+html.mw-theme .m-tabs-line .m-tabs__link:focus, html.mw-theme .m-tabs-line .m-tabs__link:focus-visible { outline: none !important; box-shadow: none !important; }
+
+/* Course header row */
+html.mw-theme .tab-pane > .row:first-child { align-items: flex-start; margin-bottom: 18px; }
+html.mw-theme .tab-pane > .row:first-child h5 { color: var(--ink) !important; font-size: 20px !important; font-weight: 700 !important; margin: 0 0 6px !important; }
+html.mw-theme .mw-att-sum { font-size: 14.5px; color: var(--ink-2); font-variant-numeric: tabular-nums; }
+html.mw-theme .mw-att-sum b { font-weight: 600; color: var(--ink); }
+html.mw-theme .mw-att-sum.mw-ok b:last-of-type { color: var(--good) !important; }
+html.mw-theme .mw-att-sum.mw-warn b:last-of-type { color: var(--warn) !important; }
+html.mw-theme .mw-att-sum.mw-bad b:last-of-type { color: var(--bad) !important; }
+
+/* "Attendance Pecentage:" label -> "ATTENDANCE" */
+html.mw-theme .tab-pane > .row:first-child .col-md-6 .row > .col-md-4 { font-size: 0 !important; padding-top: 4px; text-align: right; }
+html.mw-theme .tab-pane > .row:first-child .col-md-6 .row > .col-md-4::before {
+  content: "Attendance"; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3);
+}
+
+/* The bar: thin and solid, percentage beside it */
+html.mw-theme .tab-pane > .row:first-child .col-md-6 .row > .col-md-8 { padding-top: 10px; padding-right: 84px; }
+html.mw-theme .tab-pane .progress {
+  position: relative; height: 8px !important; border-radius: 0 !important; background: var(--tint) !important;
+  box-shadow: inset 0 0 0 1px var(--rule); overflow: visible !important;
+}
+html.mw-theme .tab-pane .progress .progress-bar {
+  position: static !important; height: 100% !important; background: var(--navy) !important; background-image: none !important;
+  animation: none !important; border-radius: 0 !important; transition: none !important; overflow: visible;
+}
+html.mw-theme .tab-pane .progress .progress-bar.bg-danger { background: var(--bad) !important; }
+html.mw-theme .tab-pane .progress .progress-bar h5 {
+  position: absolute; left: calc(100% + 14px); top: 50%; transform: translateY(-50%); margin: 0 !important; white-space: nowrap;
+  font-family: var(--serif) !important; font-weight: 800 !important; font-size: 20px !important; color: var(--ink) !important; font-variant-numeric: tabular-nums;
+}
+html.mw-theme .tab-pane .progress .progress-bar.bg-danger h5 { color: var(--bad) !important; }
+
+/* Lecture list: a proper outlined box like the marks sections, tighter rows, absences in red */
+html.mw-theme .tab-pane .table {
+  border: 1px solid var(--rule-2) !important; border-radius: 2px; border-collapse: separate !important; border-spacing: 0;
+  box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22); overflow: hidden;
+}
+html.mw-theme.mw-dark .tab-pane .table { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme .tab-pane .table td { padding: 8px 14px !important; }
+html.mw-theme .tab-pane .table td label { margin: 0 !important; font-weight: inherit; }
+html.mw-theme .tab-pane .table tr:has(td.m--font-danger) td { background: color-mix(in srgb, var(--bad) 7%, transparent) !important; }
+html.mw-theme .tab-pane .table td.m--font-danger, html.mw-theme .tab-pane .table td.m--font-danger * { color: var(--bad) !important; font-weight: 700; }
+
+/* Red dot on a course tab with no absences left */
+html.mw-theme .m-tabs__link .mw-tab-dot {
+  display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--bad); margin-left: 6px; vertical-align: 3px;
+}
+
+/* Weekday before each date, quieter than the date */
+html.mw-theme .tab-pane .table .mw-day { color: var(--ink-3) !important; font-weight: 500; margin-right: 8px; display: inline-block; width: 2.4em; text-align: left; }
+

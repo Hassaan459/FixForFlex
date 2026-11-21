@@ -1,0 +1,49 @@
+/* Marks Watcher: themed "Loading, please wait..." popup (#overlay23 on every FLEX page).
+   Only colours, fonts, borders and the spinner change. Show/hide is left to FLEX:
+   it toggles the inline display style (jQuery show/hide) and the d-none class, so this file never sets display on #overlay23. */
+
+html.mw-theme #overlay23 {
+  background-color: rgba(20, 26, 36, .32) !important;
+  -webkit-backdrop-filter: blur(1.5px);
+  backdrop-filter: blur(1.5px);
+}
+html.mw-theme.mw-dark #overlay23 { background-color: rgba(0, 0, 0, .6) !important; }
+
+html.mw-theme #overlay23 .loader-box {
+  display: flex !important;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+  min-width: 260px;
+  padding: 26px 36px 24px !important;
+  background: var(--paper) !important;
+  color: var(--ink) !important;
+  border: 1px solid var(--rule) !important;
+  border-radius: 2px !important;
+  box-shadow: 0 2px 6px rgba(20, 26, 36, .10), 0 16px 40px rgba(20, 26, 36, .22) !important;
+  font-family: var(--serif) !important;
+  font-size: 15px !important;
+  font-weight: 600 !important;
+  letter-spacing: -.005em;
+  line-height: 1.4;
+  text-align: center;
+}
+html.mw-theme.mw-dark #overlay23 .loader-box { box-shadow: 0 2px 6px rgba(0, 0, 0, .5), 0 18px 48px rgba(0, 0, 0, .7) !important; }
+
+/* Swap the grey GIF (invisible on dark paper) for a ring drawn in the theme colours */
+html.mw-theme #overlay23 .loader-box br,
+html.mw-theme #overlay23 .loader-box img { display: none !important; }
+html.mw-theme #overlay23 .loader-box::after {
+  content: "";
+  width: 22px;
+  height: 22px;
+  box-sizing: border-box;
+  border: 2.5px solid var(--rule);
+  border-top-color: var(--navy);
+  border-radius: 50%;
+  animation: mw-loader-spin .75s linear infinite;
+}
+@keyframes mw-loader-spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) {
+  html.mw-theme #overlay23 .loader-box::after { animation-duration: 2s; }
+}

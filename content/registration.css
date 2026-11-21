@@ -1,0 +1,57 @@
+/* Marks Watcher: FLEX Course Registration page (only loaded on /Student/CourseRegistration*).
+   Colours and type only. Nothing here hides, moves or disables FLEX's buttons, checkboxes or form. */
+
+/* "Registration not active yet": a notice in the theme's paper and ink, a red rule on the left */
+html.mw-theme .m-content > div > .alert.alert-danger {
+  background: var(--paper) !important; color: var(--ink) !important; border: 1px solid var(--rule) !important;
+  border-left: 3px solid var(--bad) !important; border-radius: 2px !important; box-shadow: none !important;
+  font-weight: 400 !important; font-size: 15px !important; padding: 14px 18px !important; margin: 0 0 18px !important;
+}
+html.mw-theme .m-content > div > .alert.alert-danger strong { color: var(--bad) !important; font-weight: 700 !important; }
+
+/* "Read Instructions before Register": an outlined button, still centred where FLEX puts it */
+html.mw-theme .topinstbtn {
+  background: var(--paper) !important; color: var(--ink) !important; border: 1px solid var(--rule-2) !important;
+  padding: 9px 18px !important; font-size: 14.5px !important; font-weight: 600 !important;
+}
+html.mw-theme .topinstbtn:hover { border-color: var(--ink-2) !important; background: var(--tint) !important; }
+
+/* Instructions box: FLEX hard-codes black and blue text, which disappears in dark mode */
+html.mw-theme #instructionsCollapse .m-alert__text { line-height: 1.65 !important; }
+html.mw-theme #instructionsCollapse .m-alert__text b,
+html.mw-theme #instructionsCollapse .m-alert__text u { color: var(--ink) !important; font-weight: 600 !important; }
+html.mw-theme #instructionsCollapse .m-alert__text strong .fa-circle { font-size: 6px; vertical-align: middle; margin-right: 6px; color: var(--ink-3) !important; }
+
+/* ---- The registration form (shown while registration is open) ----
+   FLEX's own blue/white colours, swapped for the theme's so the form reads in dark mode too. */
+html.mw-theme .ls-card { background: var(--paper) !important; border: 1px solid var(--rule) !important; border-radius: 2px !important; }
+html.mw-theme .ls-card .card-header { background: var(--tint) !important; color: var(--ink) !important; border-radius: 0 !important; border-bottom: 1px solid var(--rule) !important; padding: 12px 18px !important; }
+html.mw-theme .ls-card .card-header * { color: var(--ink) !important; }
+html.mw-theme .ls-card .card-body { background: transparent !important; padding: 16px 18px !important; }
+html.mw-theme .ls-alert-info { background: var(--paper) !important; color: var(--ink-2) !important; border: 1px solid var(--rule) !important; border-left: 3px solid var(--navy) !important; border-radius: 2px !important; }
+html.mw-theme .ls-btn-info { background: var(--navy) !important; color: var(--paper) !important; }
+html.mw-theme .ls-btn-outline { border: 1px solid var(--rule-2) !important; color: var(--ink) !important; background: transparent !important; }
+html.mw-theme .ls-btn-outline:hover { background: var(--tint) !important; color: var(--ink) !important; }
+html.mw-theme .summary-badge { background: var(--tint) !important; color: var(--ink) !important; border: 1px solid var(--rule) !important; border-radius: 2px !important; }
+html.mw-theme #mainSearch, html.mw-theme #improveSearch { background: var(--paper) !important; color: var(--ink) !important; border: 1px solid var(--rule-2) !important; }
+html.mw-theme .table-scroll thead th { background: var(--paper) !important; box-shadow: inset 0 -1px 0 var(--rule-2) !important; }
+html.mw-theme .searchable-table tbody tr:hover td { background: var(--tint) !important; }
+html.mw-theme .row-selected td { background: color-mix(in srgb, var(--good) 14%, transparent) !important; }
+html.mw-theme .content-registration .btn-brand, html.mw-theme .ls-card .btn-brand { border: 1px solid var(--rule-2) !important; }
+
+/* Instructions as a plain ruled list (built by registration.js) */
+html.mw-theme #instructionsCollapse { align-items: flex-start !important; }
+html.mw-theme #instructionsCollapse .m-alert__icon { padding-top: 16px !important; align-self: flex-start; }
+html.mw-theme #instructionsCollapse .m-alert__text.mw-reg-box { padding: 14px 18px 14px 14px !important; }
+html.mw-theme .mw-reg-rules { list-style: none; margin: 0; padding: 0; }
+html.mw-theme .mw-reg-rules li {
+  position: relative; padding: 9px 0 9px 18px; border-bottom: 1px solid var(--rule);
+  color: var(--ink-2) !important; font-size: 14.5px; font-weight: 400 !important; line-height: 1.55 !important;
+}
+html.mw-theme .mw-reg-rules li:last-child { border-bottom: 0; padding-bottom: 2px; }
+html.mw-theme .mw-reg-rules li:first-child { padding-top: 2px; }
+html.mw-theme .mw-reg-rules li::before {
+  content: ""; position: absolute; left: 2px; top: calc(9px + .78em - 2.5px); width: 5px; height: 5px; border-radius: 50%; background: var(--ink-3);
+}
+html.mw-theme .mw-reg-rules li:first-child::before { top: calc(2px + .78em - 2.5px); }
+html.mw-theme .mw-reg-rules li b { color: var(--ink) !important; font-weight: 600 !important; }
