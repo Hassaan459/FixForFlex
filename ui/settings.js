@@ -1,6 +1,6 @@
 // FixForFlex Settings: background marks checks, FLEX sign-in, fee rate.
 const $ = (id) => document.getElementById(id);
-const DEFAULTS = { watchEnabled: false, watchEvery: 5, flexRoll: "", flexPass: "", feePerCredit: 11000 };
+const DEFAULTS = { watchEnabled: false, watchEvery: 30, flexRoll: "", flexPass: "", feePerCredit: 11000 };
 
 $("version").textContent = "v" + chrome.runtime.getManifest().version;
 
@@ -8,12 +8,28 @@ chrome.storage.local.get(Object.keys(DEFAULTS), (st) => {
   const v = { ...DEFAULTS, ...st };
   $("watchEnabled").checked = !!v.watchEnabled;
   $("watchEvery").value = String(v.watchEvery);
-  if (!$("watchEvery").value) $("watchEvery").value = "5";
+  if (!$("watchEvery").value) $("watchEvery").value = "30";
   $("flexRoll").value = v.flexRoll || "";
   $("flexPass").value = v.flexPass || "";
   $("feePerCredit").value = v.feePerCredit;
   syncEvery();
+  syncOwner();
 });
+
+// Only the developer's own copy (by roll number, hashed) can change the interval.
+const OWNER_HASH = "c2f8eeb78c0a0b1a25d9640795f5782d2986cc132eef84574d90688173739706";
+async function isOwner(roll) {
+  const norm = String(roll || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!norm) return false;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(norm));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("") === OWNER_HASH;
+}
+async function syncOwner() {
+  const owner = await isOwner($("flexRoll").value);
+  $("everyRow").hidden = !owner;
+  $("everyNote").hidden = owner;
+}
+$("flexRoll").addEventListener("input", syncOwner);
 
 function syncEvery() { $("watchEvery").disabled = !$("watchEnabled").checked; }
 $("watchEnabled").addEventListener("change", syncEvery);
@@ -45,7 +61,7 @@ $("save").addEventListener("click", () => {
   $("flexRoll").value = roll;
   const data = {
     watchEnabled: $("watchEnabled").checked,
-    watchEvery: Number($("watchEvery").value) || 5,
+    watchEvery: Number($("watchEvery").value) || 30,
     feePerCredit: fee,
   };
   const done = () => said("Saved.");

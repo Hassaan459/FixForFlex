@@ -26,7 +26,7 @@ The popup tells you when a new version is out. Download the new zip, unzip it ov
 
 ## Marks alerts
 
-Turn them on in the popup or in Settings. FixForFlex checks your marks page every few minutes and shows a notification when something changes.
+Turn them on in the popup or in Settings. FixForFlex checks your marks page every 30 minutes and shows a notification when something changes.
 
 FLEX signs you out after a while. If you save your roll number and password in Settings, FixForFlex signs back in on its own. They're stored only in this browser's extension storage and only ever typed into FLEX's own sign-in page. If you leave them empty, checks only work while you're signed in.
 
