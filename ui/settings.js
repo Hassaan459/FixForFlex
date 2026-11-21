@@ -1,6 +1,6 @@
-// FixForFlex Settings: background marks checks, FLEX sign-in, fee rate.
+// FixForFlex Settings: background marks checks and the FLEX sign-in they use.
 const $ = (id) => document.getElementById(id);
-const DEFAULTS = { watchEnabled: false, watchEvery: 30, flexRoll: "", flexPass: "", feePerCredit: 11000 };
+const DEFAULTS = { watchEnabled: false, watchEvery: 30, flexRoll: "", flexPass: "" };
 
 $("version").textContent = "v" + chrome.runtime.getManifest().version;
 
@@ -11,7 +11,6 @@ chrome.storage.local.get(Object.keys(DEFAULTS), (st) => {
   if (!$("watchEvery").value) $("watchEvery").value = "30";
   $("flexRoll").value = v.flexRoll || "";
   $("flexPass").value = v.flexPass || "";
-  $("feePerCredit").value = v.feePerCredit;
   syncEvery();
   syncOwner();
 });
@@ -31,7 +30,13 @@ async function syncOwner() {
 }
 $("flexRoll").addEventListener("input", syncOwner);
 
-function syncEvery() { $("watchEvery").disabled = !$("watchEnabled").checked; }
+// The sign-in is only used by background checks, so it's locked while they're off.
+function syncEvery() {
+  const on = $("watchEnabled").checked;
+  $("watchEvery").disabled = !on;
+  for (const id of ["flexRoll", "flexPass", "showPass", "clearLogin"]) $(id).disabled = !on;
+  $("loginOff").hidden = on;
+}
 $("watchEnabled").addEventListener("change", syncEvery);
 
 $("showPass").addEventListener("click", () => {
@@ -56,13 +61,11 @@ $("clearLogin").addEventListener("click", () => {
 $("save").addEventListener("click", () => {
   const roll = $("flexRoll").value.trim().toUpperCase();
   const pass = $("flexPass").value;
-  if ((roll && !pass) || (!roll && pass)) return said("Fill in both roll number and password, or neither.");
-  const fee = Math.max(0, Math.round(Number($("feePerCredit").value) || 0));
+  if ($("watchEnabled").checked && ((roll && !pass) || (!roll && pass))) return said("Fill in both roll number and password, or neither.");
   $("flexRoll").value = roll;
   const data = {
     watchEnabled: $("watchEnabled").checked,
     watchEvery: Number($("watchEvery").value) || 30,
-    feePerCredit: fee,
   };
   const done = () => said("Saved.");
   if (roll) chrome.storage.local.set({ ...data, flexRoll: roll, flexPass: pass }, done);
