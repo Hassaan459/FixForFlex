@@ -2,8 +2,8 @@
    Only loaded on /Student/Transcript, so the selectors can target FLEX's markup directly.
    Restyling is pure CSS (styled from first paint); transcript.js only rewrites the credits/GPA line
    under each semester name and marks pending grades. */
-html.mw-theme { --warn: #8a5a00; }
-html.mw-theme.mw-dark { --warn: #e0b154; }
+/* Pending grades, what-if values and pickers use the logo accent (blue in light mode, green in dark), from theme.css. */
+html.mw-theme { --warn: var(--accent, #00ADEF); }
 
 /* One semester per row, full width, stacked in FLEX's own order */
 html.mw-theme .m-section__content > .row { display: block !important; margin: 0 !important; }
