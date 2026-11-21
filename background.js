@@ -1,8 +1,17 @@
 // Settings live in chrome.storage.local, set from the Settings page (ui/settings.html):
 //   flexRoll, flexPass   FLEX sign-in, used only to sign in again when the session has expired
 //   watchEnabled         background marks checks on/off (off until the user turns it on)
-//   watchEvery           minutes between checks
-const DEFAULTS = { watchEnabled: false, watchEvery: 5 };
+//   watchEvery           minutes between checks (owner only; everyone else checks every 30 minutes)
+const DEFAULTS = { watchEnabled: false, watchEvery: 30 };
+const STANDARD_EVERY = 30;
+// The developer's own roll number, hashed, so only that copy can change the interval.
+const OWNER_HASH = "c2f8eeb78c0a0b1a25d9640795f5782d2986cc132eef84574d90688173739706";
+async function isOwner(roll) {
+  const norm = String(roll || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!norm) return false;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(norm));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("") === OWNER_HASH;
+}
 async function settings() {
   const st = await chrome.storage.local.get(["flexRoll", "flexPass", "watchEnabled", "watchEvery"]);
   return { ...DEFAULTS, ...Object.fromEntries(Object.entries(st).filter(([, v]) => v !== undefined)) };
@@ -344,7 +353,8 @@ async function checkForUpdate() {
 async function setupAlarms() {
   const cfg = await settings();
   await chrome.alarms.clear("check-marks");
-  if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: Math.max(1, Number(cfg.watchEvery) || 5) });
+  const every = (await isOwner(cfg.flexRoll)) ? Math.max(1, Number(cfg.watchEvery) || STANDARD_EVERY) : STANDARD_EVERY;
+  if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: every });
   if (!(await chrome.alarms.get("check-update"))) chrome.alarms.create("check-update", { delayInMinutes: 1, periodInMinutes: 24 * 60 });
 }
 
@@ -370,7 +380,7 @@ chrome.alarms.onAlarm.addListener((a) => {
 // Settings page changed the schedule: start over with the new one.
 chrome.storage.onChanged.addListener((ch, area) => {
   if (area !== "local") return;
-  if (ch.watchEnabled || ch.watchEvery) {
+  if (ch.watchEnabled || ch.watchEvery || ch.flexRoll) {
     setupAlarms();
     if (ch.watchEnabled && ch.watchEnabled.newValue === true && !ch.watchEnabled.oldValue) check(true);
   }
