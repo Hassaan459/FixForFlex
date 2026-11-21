@@ -1,0 +1,87 @@
+/* FixForFlex: Grade Report page, in the shared theme.
+   Only loaded on /Student/GradeReport. Keeps FLEX's four-semesters-per-row grid.
+   gradereport.js wraps each semester in .mw-gr-sem and gives grade cells a status class. */
+html.mw-theme { --gr-accent: #8a5a00; }
+html.mw-theme.mw-dark { --gr-accent: #e0b154; }
+
+/* Key line under the heading */
+html.mw-theme .mw-gr-key {
+  display: flex; flex-wrap: wrap; gap: 6px 22px; margin: -8px 0 24px !important;
+  font-size: 13px; color: var(--ink-3) !important;
+}
+html.mw-theme .mw-gr-key b { font-family: var(--sans); font-weight: 700; margin-right: 2px; color: var(--ink); }
+
+/* Grid: four columns, even gutters, room between rows */
+html.mw-theme #TranscriptDivision .row { margin: 0 -10px !important; }
+html.mw-theme #TranscriptDivision .row + .row { margin-top: 28px !important; }
+html.mw-theme #TranscriptDivision .col-md-3 { padding: 0 10px !important; margin: 0 !important; display: flex; }
+
+/* One outlined box per semester, with the shared strong shadow; boxes in a row end level */
+html.mw-theme .mw-gr-sem {
+  flex: 1; display: flex; flex-direction: column; min-width: 0;
+  background: var(--paper); border: 1px solid var(--rule-2); border-radius: 0;
+  box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22);
+}
+html.mw-theme.mw-dark .mw-gr-sem { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme .mw-gr-sem .table { border-top: 0 !important; table-layout: fixed; height: auto !important; }
+html.mw-theme .mw-gr-sem .portlet-body { background: transparent !important; }
+
+/* Semester heading: name, term under it, attempted credits on the right */
+html.mw-theme .mw-gr-sem thead.backgrnd_Color { background: transparent !important; }
+html.mw-theme .mw-gr-sem .tbl thead.backgrnd_Color th { background: var(--tint) !important; }
+html.mw-theme .mw-gr-sem .tbl23 thead th {
+  background: transparent !important; border-bottom: 1px solid var(--rule-2) !important;
+  padding: 12px 14px 10px !important; text-transform: none; letter-spacing: 0; vertical-align: bottom;
+}
+html.mw-theme .mw-gr-sem .tbl23 th:first-child {
+  width: auto !important; font-family: var(--sans) !important; font-size: 16px !important; font-weight: 700 !important;
+  color: var(--ink) !important; line-height: 1.25;
+}
+html.mw-theme .mw-gr-term { display: block; margin-top: 2px; font-family: var(--sans); font-size: 12.5px; font-weight: 400; color: var(--ink-3); }
+html.mw-theme .mw-gr-sem .tbl23 th.mw-gr-cr {
+  width: 64px !important; text-align: right !important; font-family: var(--sans) !important;
+  font-size: 15px !important; font-weight: 700 !important; color: var(--ink) !important; font-variant-numeric: tabular-nums;
+}
+html.mw-theme .mw-gr-sem .tbl23 th.mw-gr-cr::after { content: " cr"; font-size: 12px; font-weight: 400; color: var(--ink-3); }
+html.mw-theme .mw-gr-sem .tbl23 th.mw-gr-season { display: none !important; }
+
+/* Course table: column heads, then rows */
+html.mw-theme .mw-gr-sem .tbl thead th { padding: 7px 4px !important; font-size: 11px !important; }
+html.mw-theme .mw-gr-sem .tbl thead th:first-child { width: auto !important; padding-left: 14px !important; }
+html.mw-theme .mw-gr-sem .tbl th:nth-child(2) { width: 50px; }
+html.mw-theme .mw-gr-sem .tbl th:nth-child(3) { width: 38px; }
+html.mw-theme .mw-gr-sem .tbl th:last-child, html.mw-theme .mw-gr-sem .tbl td:last-child { padding-right: 10px !important; }
+html.mw-theme .mw-gr-sem .tbl td { padding: 8px 4px !important; font-size: 14px; line-height: 1.3; }
+html.mw-theme .mw-gr-sem .tbl td:first-child { padding-left: 14px !important; background: transparent !important; }
+
+/* Course code above the name */
+html.mw-theme .mw-gr-code { display: block; font-family: var(--mono) !important; font-size: 11.5px; color: var(--ink-3) !important; letter-spacing: .01em; }
+html.mw-theme .mw-gr-name { display: block; font-size: 13.5px; color: var(--ink) !important; overflow-wrap: anywhere; }
+html.mw-theme .mw-gr-elective .mw-gr-name { color: var(--ink-2) !important; font-style: italic; }
+
+/* Grades: plain ink when passed; status by colour of the letter only, no fills */
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-pass { font-weight: 700; color: var(--ink) !important; }
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-now { font-weight: 700; color: var(--gr-accent) !important; }
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-next { font-weight: 700; color: var(--ink) !important; text-decoration: underline; text-decoration-color: var(--gr-accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-fail { font-weight: 700; color: var(--bad) !important; }
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-blocked { font-weight: 700; color: var(--bad) !important; }
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-open { color: var(--ink-3) !important; }
+html.mw-theme .mw-gr-sem .tbl td.mw-gr-tr { font-weight: 600; color: var(--ink-2) !important; }
+html.mw-theme .mw-gr-key b.mw-gr-now { color: var(--gr-accent); }
+html.mw-theme .mw-gr-key b.mw-gr-next { text-decoration: underline; text-decoration-color: var(--gr-accent); text-decoration-thickness: 2px; text-underline-offset: 3px; }
+html.mw-theme .mw-gr-key b.mw-gr-fail, html.mw-theme .mw-gr-key b.mw-gr-blocked { color: var(--bad); }
+html.mw-theme .mw-gr-key b.mw-gr-open { color: var(--ink-3); }
+
+/* Passed-credit totals, pinned to the bottom of each box and lined up under Grade and Lab */
+html.mw-theme .mw-gr-foot {
+  margin-top: auto; display: grid; grid-template-columns: 1fr 50px 38px; align-items: baseline;
+  padding: 9px 10px 9px 14px; border-top: 1px solid var(--rule-2);
+  font-size: 12px; color: var(--ink-3); font-variant-numeric: tabular-nums;
+}
+html.mw-theme .mw-gr-foot span { font-weight: 600; letter-spacing: .06em; text-transform: uppercase; font-size: 11px; }
+html.mw-theme .mw-gr-foot b { text-align: center; font-family: var(--sans); font-size: 14px; font-weight: 700; color: var(--ink); }
+html.mw-theme .mw-gr-foot b:last-child { padding-left: 4px; }
+
+/* Narrow windows: two semesters per row, then one */
+@media (max-width: 1100px) { html.mw-theme #TranscriptDivision .col-md-3 { flex: 0 0 50%; max-width: 50%; margin-bottom: 20px !important; } }
+@media (max-width: 640px) { html.mw-theme #TranscriptDivision .col-md-3 { flex: 0 0 100%; max-width: 100%; } }

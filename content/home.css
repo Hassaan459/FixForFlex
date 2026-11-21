@@ -1,0 +1,25 @@
+/* Marks Watcher: FLEX home page (Student Profile). Scoped to html.mw-home, set by home.js. */
+
+/* Heading lines up with the text below it (FLEX's hidden icon left a gap) */
+html.mw-theme.mw-home .m-portlet__head-icon { display: none !important; }
+
+/* Each field: small quiet label above, the value below in full ink */
+html.mw-theme.mw-home .m-portlet__body p.mw-home-field { display: flex; flex-direction: column; gap: 3px; margin: 0 0 18px !important; }
+html.mw-theme.mw-home .mw-home-label { color: var(--ink-3) !important; font-size: 12.5px !important; font-weight: 500 !important; letter-spacing: .01em; }
+html.mw-theme.mw-home .mw-home-value, html.mw-theme.mw-home .mw-home-value * { color: var(--ink) !important; font-size: 15px; font-weight: 500 !important; overflow-wrap: anywhere; }
+html.mw-theme.mw-home .m-portlet__body p.mw-home-empty { display: none !important; }
+html.mw-theme.mw-home .m-portlet__body .col-md-4:last-child p.mw-home-field:last-child,
+html.mw-theme.mw-home .m-portlet__body [class*="col-"] > p.mw-home-field:last-of-type { margin-bottom: 0 !important; }
+html.mw-theme.mw-home .m-portlet .m-portlet__body { padding: 26px 36px 28px !important; }
+html.mw-theme.mw-home .m-portlet__body .row > [class*="col-"] { margin-bottom: 0; }
+
+/* Contact: "Permanent" / "Current" as small section labels */
+html.mw-theme.mw-home .m-portlet__body h5, html.mw-theme.mw-home .m-portlet__body h5 * {
+  color: var(--ink-2) !important; font-size: 13px !important; font-weight: 700 !important; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 14px !important;
+}
+
+/* Family table: plain left-aligned columns */
+html.mw-theme.mw-home .table td.m--hide { display: none !important; }
+html.mw-theme.mw-home .table td, html.mw-theme.mw-home .table th { text-align: left !important; }
+html.mw-theme.mw-home .table td label { margin: 0 !important; font-weight: 500; }
+html.mw-theme.mw-home .table td.text-center, html.mw-theme.mw-home .table th:last-child { text-align: center !important; }

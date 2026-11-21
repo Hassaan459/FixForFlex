@@ -1,0 +1,217 @@
+/* Marks Watcher: Fee Challan and Fee Details. Scoped to html.mw-theme.mw-fee (set by fee.js).
+   Uses theme.css colours only; FLEX's layout, buttons and modals stay where they are. */
+
+/* ================= Fee Challan ================= */
+
+/* FLEX's layout table: challan list on the left, "how to pay" on the right */
+html.mw-theme.mw-fee-challan .mw-fee-layout { display: block !important; border: 0 !important; width: 100% !important; }
+html.mw-theme.mw-fee-challan .mw-fee-layout > tbody { display: block; }
+html.mw-theme.mw-fee-challan .mw-fee-layout > tbody > tr { display: flex !important; flex-wrap: wrap; gap: 28px; align-items: flex-start; }
+html.mw-theme.mw-fee-challan .mw-fee-layout > tbody > tr > td:first-child { flex: 1 0 auto; }
+html.mw-theme.mw-fee-challan .mw-fee-layout > tbody > tr > td.mw-fee-howto { flex: 1 1 260px; }
+html.mw-theme.mw-fee-challan .mw-fee-layout > tbody > tr > td {
+  display: block; padding: 0 !important; border: 0 !important; text-align: left !important; width: auto !important;
+}
+
+/* The challan list */
+html.mw-theme.mw-fee-challan .mw-fee-list {
+  display: table !important; border: 1px solid var(--rule) !important; border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22);
+}
+html.mw-theme.mw-dark.mw-fee-challan .mw-fee-list { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme.mw-fee-challan .mw-fee-list thead th {
+  text-transform: none !important; letter-spacing: 0 !important; font-size: 13px !important; color: var(--ink-3) !important;
+  background: var(--tint) !important; white-space: nowrap !important; vertical-align: bottom !important; line-height: 1.3;
+  padding: 10px 10px !important;
+}
+html.mw-theme.mw-fee-challan .mw-fee-list thead th:nth-child(n+6) { white-space: normal !important; min-width: 92px; }
+html.mw-theme.mw-fee-challan .mw-fee-list td { font-size: 14.5px !important; font-weight: 500; white-space: nowrap; padding: 12px 10px !important; }
+/* theme.css paints everything inside a cell in ink; the button keeps its own text colour */
+html.mw-theme.mw-fee-challan .mw-fee-list td .btn { color: var(--paper) !important; }
+html.mw-theme.mw-fee-challan .mw-fee-list td:first-child, html.mw-theme.mw-fee-challan .mw-fee-list th:first-child { padding-left: 16px !important; }
+html.mw-theme.mw-fee-challan .mw-fee-list td.mw-fee-paid { color: var(--good) !important; font-weight: 600; }
+html.mw-theme.mw-fee-challan .mw-fee-list td.mw-fee-unpaid { color: var(--bad) !important; font-weight: 600; }
+html.mw-theme.mw-fee-challan .mw-fee-list .btn { padding: 5px 14px !important; font-size: 13px !important; font-weight: 600 !important; }
+html.mw-theme.mw-fee-challan .mw-fee-list .btn:hover { filter: brightness(1.08); }
+
+/* "Fee can be paid using..." : a plain outlined note, regular weight with bold only where it labels something */
+html.mw-theme.mw-fee-challan .mw-fee-layout > tbody > tr > td.mw-fee-howto {
+  border: 1px solid var(--rule) !important; border-left: 3px solid var(--navy) !important; border-radius: 2px;
+  padding: 18px 20px !important; background: var(--paper); color: var(--ink-2) !important;
+  font-size: 13.5px !important; line-height: 1.55; text-align: left !important;
+}
+html.mw-theme.mw-fee-challan .mw-fee-howto br { display: none; }
+html.mw-theme.mw-fee-challan .mw-fee-howto strong { font-weight: 500; color: var(--ink-2) !important; }
+html.mw-theme.mw-fee-challan .mw-fee-howto > strong:first-child {
+  display: block; margin: 0 0 12px; font-weight: 700; font-size: 15px; color: var(--ink) !important;
+}
+html.mw-theme.mw-fee-challan .mw-fee-howto p { margin: 0 0 6px !important; padding: 0 !important; color: var(--ink-2) !important; max-width: 78ch; }
+html.mw-theme.mw-fee-challan .mw-fee-howto p.mw-fee-method { margin-top: 12px !important; }
+html.mw-theme.mw-fee-challan .mw-fee-howto p.mw-fee-method > strong { font-weight: 700; color: var(--ink) !important; }
+html.mw-theme.mw-fee-challan .mw-fee-howto p > strong[style] { font-style: normal !important; font-weight: 600; color: var(--ink) !important; }
+html.mw-theme.mw-fee-challan .mw-fee-howto p:has(> strong[style]) { padding-left: 14px !important; }
+html.mw-theme.mw-fee-challan .mw-fee-howto p > strong[style] { margin-right: 4px; }
+html.mw-theme.mw-fee-challan .mw-fee-howto > strong[style], html.mw-theme.mw-fee-challan .mw-fee-howto > strong:not(:first-child) {
+  display: block; margin: 12px 0 4px; font-style: normal !important; font-size: 12.5px; color: var(--ink-3) !important;
+}
+html.mw-theme.mw-fee-challan .mw-fee-howto > p.mw-fee-method:last-of-type { margin-top: 14px !important; padding-top: 12px !important; border-top: 1px solid var(--rule); max-width: none; }
+html.mw-theme.mw-fee-challan .mw-fee-howto a { color: var(--navy) !important; word-break: break-all; font-weight: 500; }
+
+
+/* Modals: FLEX paints the NIFT header grey and borders light, which wash out in dark mode */
+html.mw-theme.mw-fee-challan .modal .table-bordered td, html.mw-theme.mw-fee-challan .modal .table-bordered th { border: 1px solid var(--rule) !important; }
+html.mw-theme.mw-fee-challan .modal thead tr { background: var(--tint) !important; }
+html.mw-theme.mw-fee-challan .modal h4, html.mw-theme.mw-fee-challan .modal h5, html.mw-theme.mw-fee-challan .modal h6,
+html.mw-theme.mw-fee-challan .modal label, html.mw-theme.mw-fee-challan .modal td, html.mw-theme.mw-fee-challan .modal b { color: var(--ink) !important; }
+html.mw-theme.mw-fee-challan .modal .modal-header, html.mw-theme.mw-fee-challan .modal .modal-footer { border-color: var(--rule) !important; }
+html.mw-theme.mw-fee-challan .modal .close { color: var(--ink-3) !important; text-shadow: none; }
+html.mw-theme.mw-fee-challan .modal .table td { text-align: left !important; }
+
+/* ================= Fee Details ================= */
+
+/* Semester summary: one outlined block, ruled rows, numbers centred under their headings */
+html.mw-theme.mw-fee-details #sample_StdFeeDetail {
+  border: 1px solid var(--rule); border-radius: 2px; margin-bottom: 28px !important;
+  box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22);
+}
+html.mw-theme.mw-dark.mw-fee-details #sample_StdFeeDetail { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme.mw-fee-details #sample_StdFeeDetail > [id^="tablerow_"] { margin: 0 !important; border-top: 1px solid var(--rule); }
+html.mw-theme.mw-fee-details #sample_StdFeeDetail > [id^="tablerow_"]:first-child { border-top: 0; }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeaderRow_"],
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] > .row {
+  display: grid !important; grid-template-columns: minmax(200px, 1.7fr) repeat(6, minmax(0, 1fr)); align-items: center;
+  margin: 0 !important; padding: 0 12px 0 16px;
+}
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeaderRow_"] > div,
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] > .row > div { max-width: none !important; width: auto !important; flex: none !important; padding: 0 6px !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeaderRow_"] {
+  background: var(--tint); border-bottom: 1px solid var(--rule-2); padding-top: 10px; padding-bottom: 9px;
+}
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeaderRow_"] b { display: block; text-align: center; font-size: 13px; font-weight: 600; color: var(--ink-3) !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] > .row { padding-top: 10px; padding-bottom: 10px; }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] > .row:hover { background: var(--tint); }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] p {
+  margin: 0 !important; text-align: center; font-size: 15px; font-weight: 500; color: var(--ink) !important;
+  font-variant-numeric: tabular-nums lining-nums;
+}
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] p.mw-fee-zero { color: var(--ink-3) !important; font-weight: 400; }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] .col-lg-3 { display: flex; align-items: center; gap: 12px; }
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] label {
+  margin: 0 !important; font-size: 15.5px; font-weight: 600; line-height: 1.2; color: var(--ink) !important; cursor: default;
+}
+
+/* The expand button: a small outlined chevron instead of a blue pill */
+html.mw-theme.mw-fee-details [id^="BtnhideshowInternal"] {
+  position: relative; width: 28px; height: 28px; min-width: 28px; padding: 0 !important; flex: none;
+  background: transparent !important; border: 1px solid var(--rule-2) !important; border-radius: 2px !important;
+  color: var(--ink-2) !important; box-shadow: none !important;
+}
+html.mw-theme.mw-fee-details [id^="BtnhideshowInternal"]:hover { border-color: var(--ink-2) !important; color: var(--ink) !important; background: var(--paper) !important; }
+html.mw-theme.mw-fee-details [id^="BtnhideshowInternal"] i { display: none !important; }
+html.mw-theme.mw-fee-details [id^="BtnhideshowInternal"]::before {
+  content: ""; position: absolute; left: 50%; top: 50%; width: 7px; height: 7px;
+  border-right: 1.6px solid currentColor; border-bottom: 1.6px solid currentColor;
+  transform: translate(-65%, -50%) rotate(-45deg); transition: transform .15s ease;
+}
+html.mw-theme.mw-fee-details [id^="BtnhideshowInternal"]:has(.fa-angle-down)::before { transform: translate(-50%, -70%) rotate(45deg); }
+/* FLEX writes a non-breaking space between the button and the semester name */
+html.mw-theme.mw-fee-details [id^="rowStdDetailHeader_"] .col-lg-3 { font-size: 0; }
+
+/* Expanded semester: two outlined panels side by side, as FLEX lays them out */
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] { padding: 4px 20px 22px; border-top: 1px solid var(--rule); background: var(--desk); }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] > br { display: none; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] > .row { margin-top: 16px !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] h4 { margin: 0 0 10px !important; font-size: 16px !important; color: var(--ink) !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] h4 b { font-weight: 700; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] hr { display: none; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .border.border-secondary {
+  border: 1px solid var(--rule) !important; border-radius: 2px; background: var(--paper); padding: 6px 16px !important;
+  box-shadow: 0 2px 4px rgba(15,25,45,.06), 0 8px 18px -8px rgba(15,25,45,.18);
+}
+html.mw-theme.mw-dark.mw-fee-details [id^="rowStdDetail_"] .border.border-secondary { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 8px 18px -8px rgba(0,0,0,.6); }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] label { margin: 0 !important; color: var(--ink) !important; font-size: 14.5px; }
+
+/* A) to G): label on the left, amount on the right */
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] .row {
+  display: flex !important; justify-content: space-between; align-items: baseline; gap: 16px; margin: 0 !important; flex-wrap: nowrap;
+}
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] .row > div { flex: 0 1 auto !important; max-width: none !important; width: auto !important; padding: 0 !important; float: none !important; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] .row:has(> div > label) { padding: 9px 0; border-bottom: 1px solid var(--rule); }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] > div > div:last-child,
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] .row:last-child { border-bottom: 0; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] label b { font-weight: 600; color: var(--ink-3); margin-right: 4px; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] [id^="lb"] { font-variant-numeric: tabular-nums lining-nums; text-align: right; white-space: nowrap; }
+html.mw-theme.mw-fee-details [id^="rowNet_"] .row { border-top: 1px solid var(--rule-2); }
+html.mw-theme.mw-fee-details [id^="rowBalance_"] { border-top: 1px solid var(--ink-2); border-bottom: 3px double var(--rule-2) !important; margin-bottom: 6px !important; }
+/* the itemised lines under B), C), D) */
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] .row:has(> div > ul) { padding: 0; border: 0; display: block !important; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] .row:has(> div > ul) > div:empty { display: none; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] ul { list-style: none; margin: -4px 0 8px !important; padding: 0 0 0 22px !important; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] ul:empty { display: none; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] li {
+  display: flex !important; justify-content: space-between; gap: 12px; width: auto !important;
+  padding: 3px 0; font-size: 13.5px !important; color: var(--ink-2) !important;
+}
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] li > div { margin: 0 !important; padding: 0 !important; max-width: none !important; width: auto !important; flex: 0 1 auto !important; }
+html.mw-theme.mw-fee-details [id^="rowFeeInSemester_"] li b { font-weight: 500; color: var(--ink-2) !important; font-variant-numeric: tabular-nums; }
+
+/* Registration log */
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] > div > .row:not(:has(table)):not([id]) {
+  display: flex !important; gap: 10px; align-items: baseline; margin: 0 !important; padding: 8px 0 0;
+}
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] > div > .row:not(:has(table)) > div { flex: none !important; max-width: none !important; width: auto !important; padding: 0 !important; }
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] > div > .row:not(:has(table)) label:not([id]) { color: var(--ink-3) !important; font-size: 13px; font-weight: 600; min-width: 42px; }
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] [id^="lbSGPA_"], html.mw-theme.mw-fee-details [id^="rowRegDetail_"] [id^="lbCGPA_"] { font-weight: 600; font-variant-numeric: tabular-nums; }
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] .row:has(table) { margin: 10px -16px 0 !important; }
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] .row:has(table) > div { padding: 0 !important; }
+html.mw-theme.mw-fee-details [id^="rowRegDetail_"] h4:empty { display: none; }
+/* FLEX hides the installment table when there are none; theme.css's display:table would bring back its empty header */
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table[style*="display: none"], html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table[style*="display:none"] { display: none !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table td:last-child { white-space: nowrap; }
+html.mw-theme.mw-fee-details [id^="rowInstallment_"] h4 { margin: 16px 0 0 !important; padding: 0 0 8px; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table thead tr { background: transparent !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table thead th {
+  text-transform: none !important; letter-spacing: 0 !important; font-size: 12.5px !important; color: var(--ink-3) !important;
+  background: transparent !important; padding: 9px 12px !important; border-bottom: 1px solid var(--rule) !important;
+}
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table td { font-size: 14px !important; padding: 9px 12px !important; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table td:first-child, html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table th:first-child { padding-left: 16px !important; width: 1%; }
+html.mw-theme.mw-fee-details [id^="rowStdDetail_"] .table td:nth-child(2), html.mw-theme.mw-fee-details [id^="rowStdDetail_"] [id^="tblRegisteredCoursesDetail_"] th:nth-child(2) { text-align: left !important; }
+
+/* Collection table: fits the sheet; scrolls sideways only on narrow screens */
+html.mw-theme.mw-fee-details .table-scrollable {
+  overflow-x: auto; border: 1px solid var(--rule); border-radius: 2px;
+  box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22);
+}
+html.mw-theme.mw-dark.mw-fee-details .table-scrollable { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme.mw-fee-details #sample_CollectionDetail { border-top: 0 !important; }
+html.mw-theme.mw-fee-details #sample_CollectionDetail thead th {
+  text-transform: none !important; letter-spacing: 0 !important; font-size: 13px !important; color: var(--ink-3) !important;
+  padding: 10px 8px !important; white-space: nowrap;
+}
+html.mw-theme.mw-fee-details #sample_CollectionDetail td { font-size: 13.5px !important; padding: 11px 8px !important; white-space: nowrap; font-variant-numeric: tabular-nums; }
+html.mw-theme.mw-fee-details #sample_CollectionDetail td:first-child, html.mw-theme.mw-fee-details #sample_CollectionDetail th:first-child { padding-left: 16px !important; }
+html.mw-theme.mw-fee-details #sample_CollectionDetail td:nth-child(4) { white-space: normal; }
+html.mw-theme.mw-fee-details #sample_CollectionDetail td:nth-child(6) { font-weight: 600; }
+html.mw-theme.mw-fee-details #sample_CollectionDetail a.edit { color: var(--navy) !important; font-weight: 500 !important; text-underline-offset: 3px; cursor: pointer; }
+html.mw-theme.mw-fee-details #sample_CollectionDetail tbody tr:hover td { background: var(--tint) !important; }
+html.mw-theme.mw-fee-details #ModelRemarksDetail label, html.mw-theme.mw-fee-details #ModelRemarksDetail h4 { color: var(--ink) !important; }
+html.mw-theme.mw-fee-details #ModelRemarksDetail .modal-header, html.mw-theme.mw-fee-details #ModelRemarksDetail .modal-footer { border-color: var(--rule) !important; }
+
+/* ================= Printing (Ctrl+P on these pages) =================
+   Always light, no sidebar or header, so a printout of the list looks like paper.
+   The bank challan itself opens on its own page, which fee.js leaves untouched. */
+@media print {
+  html.mw-theme.mw-fee {
+    --paper: #fff; --desk: #fff; --ink: #000; --ink-2: #222; --ink-3: #555; --rule: #bbb; --rule-2: #777;
+    --navy: #1d3b66; --tint: #f2f2f2; --good: #1f5a2e; --bad: #8a1f1f; color-scheme: light;
+  }
+  html.mw-theme.mw-fee .m-aside-left, html.mw-theme.mw-fee .m-header, html.mw-theme.mw-fee .m-footer,
+  html.mw-theme.mw-fee .mw-mode-btn, html.mw-theme.mw-fee .m-scroll-top { display: none !important; }
+  html.mw-theme.mw-fee .m-body { padding: 0 !important; }
+  html.mw-theme.mw-fee .m-content { max-width: none; padding: 0 !important; }
+  html.mw-theme.mw-fee .m-portlet, html.mw-theme.mw-fee .mw-fee-list, html.mw-theme.mw-fee #sample_StdFeeDetail,
+  html.mw-theme.mw-fee .table-scrollable, html.mw-theme.mw-fee .border.border-secondary { box-shadow: none !important; }
+  html.mw-theme.mw-fee .table-scrollable { overflow: visible; }
+  html.mw-theme.mw-fee * { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}

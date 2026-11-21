@@ -1,0 +1,44 @@
+/* Marks Watcher: Tentative Study Plan page, in the shared theme.
+   Only loaded on /Student/TentativeStudyPlan. Keeps FLEX's two-column layout of semesters;
+   fixes heading contrast, column alignment and spacing. Pure CSS. */
+
+/* Two columns, with room between semester rows */
+html.mw-theme .m-section__content > .row { row-gap: 36px; margin: 0 -14px !important; }
+html.mw-theme .m-section__content > .row > .col-md-6 { padding: 0 14px !important; }
+
+/* Semester heading: readable in both modes, term in quieter text */
+html.mw-theme .m-section__content h4 {
+  font-family: var(--sans) !important; font-size: 18px !important; font-weight: 700 !important;
+  color: var(--ink) !important; margin: 0 0 10px !important; line-height: 1.3;
+}
+html.mw-theme .m-section__content h4 small.text-muted {
+  font-family: var(--sans) !important; font-size: 14px !important; font-weight: 400 !important;
+  color: var(--ink-3) !important; margin-left: 4px;
+}
+
+/* Every semester table has the same columns at the same widths */
+html.mw-theme .m-section__content .table {
+  table-layout: fixed; width: 100% !important; margin: 0 !important;
+  border: 1px solid var(--rule-2) !important; border-collapse: separate !important; border-spacing: 0; border-radius: 0 !important;
+  box-shadow: 0 2px 4px rgba(15,25,45,.08), 0 10px 24px -8px rgba(15,25,45,.22);
+}
+html.mw-theme.mw-dark .m-section__content .table { box-shadow: 0 2px 4px rgba(0,0,0,.4), 0 10px 24px -8px rgba(0,0,0,.6); }
+html.mw-theme .m-section__content .table th:nth-child(1) { width: 84px; }
+html.mw-theme .m-section__content .table th:nth-child(3) { width: 74px; }
+html.mw-theme .m-section__content .table th:nth-child(4) { width: 90px; }
+
+html.mw-theme .m-section__content .table td { padding: 9px 12px !important; font-size: 14px; }
+html.mw-theme .m-section__content .table th { padding-left: 12px !important; padding-right: 12px !important; }
+
+/* Code and course name read left to right; credits centred; type on the right */
+html.mw-theme .m-section__content .table td:nth-child(2),
+html.mw-theme .m-section__content .table th:nth-child(2) { text-align: left !important; }
+html.mw-theme .m-section__content .table td:nth-child(3),
+html.mw-theme .m-section__content .table th:nth-child(3) { text-align: center !important; }
+html.mw-theme .m-section__content .table td:nth-child(4),
+html.mw-theme .m-section__content .table th:nth-child(4) { text-align: right !important; }
+html.mw-theme .m-section__content .table td:first-child {
+  font-family: var(--mono) !important; font-size: 13px; white-space: nowrap; color: var(--ink-2) !important;
+}
+html.mw-theme .m-section__content .table td:nth-child(3) { font-weight: 600; font-variant-numeric: tabular-nums; }
+html.mw-theme .m-section__content .table td:nth-child(4) { color: var(--ink-3) !important; font-size: 13px; }
