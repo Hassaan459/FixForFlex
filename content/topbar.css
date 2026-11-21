@@ -1,7 +1,7 @@
 /* FixForFlex: top bar. Profile dropdown (My Profile, Change Password, Logout) and the page title.
    Loaded on every FLEX page after theme.css; uses its tokens (--paper, --ink, --rule...). */
-html.mw-theme { --tb-accent: #8a5a00; --tb-shadow: 0 2px 4px rgba(15,25,45,.10), 0 14px 32px -10px rgba(15,25,45,.32); }
-html.mw-theme.mw-dark { --tb-accent: #e0b154; --tb-shadow: 0 2px 4px rgba(0,0,0,.45), 0 16px 36px -10px rgba(0,0,0,.75); }
+html.mw-theme { --tb-accent: var(--accent); --tb-shadow: 0 2px 4px rgba(15,25,45,.10), 0 14px 32px -10px rgba(15,25,45,.32); }
+html.mw-theme.mw-dark { --tb-accent: var(--accent); --tb-shadow: 0 2px 4px rgba(0,0,0,.45), 0 16px 36px -10px rgba(0,0,0,.75); }
 
 /* Page title in the middle of the bar: full ink, whatever FLEX's inline white or fades say */
 html.mw-theme .m-header .m-header-head .m-subheader__title {

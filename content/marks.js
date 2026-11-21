@@ -320,7 +320,18 @@
         place();
         window.addEventListener("resize", place);
         if (window.ResizeObserver) new ResizeObserver(place).observe(panel);
+        // Follow the panel frame by frame while the sidebar animates, so the picker glides instead of jumping.
+        let until = 0, ticking = false;
+        const follow = (ms = 450) => {
+          until = Math.max(until, performance.now() + ms);
+          if (ticking) return;
+          ticking = true;
+          const step = () => { place(); if (performance.now() < until) requestAnimationFrame(step); else ticking = false; };
+          requestAnimationFrame(step);
+        };
+        document.addEventListener("transitionstart", () => follow(), true);
         document.addEventListener("transitionend", place, true);
+        new MutationObserver(() => follow()).observe(document.documentElement, { attributes: true, attributeFilter: ["class"] });
       }
     } catch (e) { console.warn("[Marks Watcher] semester", e); }
 

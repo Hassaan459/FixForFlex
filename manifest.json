@@ -2,8 +2,14 @@
   "manifest_version": 3,
   "name": "FixForFlex",
   "short_name": "FixForFlex",
-  "version": "3.0",
+  "version": "3.1",
   "description": "A FLEX portal enhancer: a cleaner, readable FLEX with course totals, attendance and transcript tools, and alerts when your marks change.",
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "permissions": [
     "alarms",
     "notifications",
@@ -18,7 +24,18 @@
     "service_worker": "background.js"
   },
   "action": {
-    "default_title": "FixForFlex: check marks now"
+    "default_title": "FixForFlex",
+    "default_popup": "ui/popup.html",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png",
+      "128": "icons/icon128.png"
+    }
+  },
+  "options_ui": {
+    "page": "ui/settings.html",
+    "open_in_tab": true
   },
   "content_scripts": [
     {
@@ -58,7 +75,7 @@
       "js": [
         "content/sidebar.js"
       ],
-      "run_at": "document_end"
+      "run_at": "document_start"
     },
     {
       "matches": [
@@ -206,6 +223,31 @@
       ],
       "js": [
         "content/gradereport.js"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://flexstudent.nu.edu.pk/Student/FeedBackQuestions*",
+        "https://flexstudent.nu.edu.pk/Student/FeedbackQuestions*"
+      ],
+      "js": [
+        "content/feedback.js"
+      ],
+      "css": [
+        "content/feedback.css"
+      ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://flexstudent.nu.edu.pk/Student/TentativeStudyPlan*"
+      ],
+      "js": [
+        "content/studyplan-fee.js"
+      ],
+      "css": [
+        "content/studyplan-fee.css"
       ],
       "run_at": "document_end"
     }
