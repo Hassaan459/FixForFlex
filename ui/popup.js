@@ -47,8 +47,7 @@ $("check").addEventListener("click", () => {
 
 // ---- FLEX sign-in, shown only while alerts are on ----
 chrome.storage.local.get(["flexRoll", "flexPass", "watchEvery"], (st) => {
-  $("flexRoll").value = st.flexRoll || "";
-  $("flexPass").value = st.flexPass || "";
+  showSaved(st.flexRoll && st.flexPass ? st.flexRoll : "");
   $("watchEvery").value = String(st.watchEvery || 30);
   if (!$("watchEvery").value) $("watchEvery").value = "30";
   syncOwner();
@@ -62,7 +61,17 @@ async function isOwner(roll) {
   const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(norm));
   return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("") === OWNER_HASH;
 }
-async function syncOwner() { $("everyRow").hidden = !(await isOwner($("flexRoll").value)); }
+let savedRoll = "";
+async function syncOwner() { $("everyRow").hidden = !(await isOwner(savedRoll || $("flexRoll").value)); }
+
+// Once saved, the form folds into one line: "Signed in as 22I-0000  [Remove account]".
+function showSaved(roll) {
+  savedRoll = roll;
+  $("loginForm").hidden = !!roll;
+  $("loginSaved").hidden = !roll;
+  $("savedRoll").textContent = roll;
+  syncOwner();
+}
 $("flexRoll").addEventListener("input", syncOwner);
 
 $("showPass").addEventListener("click", () => {
@@ -83,14 +92,16 @@ $("saveLogin").addEventListener("click", () => {
   const pass = $("flexPass").value;
   if (!roll || !pass) return said("Fill in both.");
   $("flexRoll").value = roll;
-  chrome.storage.local.set({ flexRoll: roll, flexPass: pass, watchEvery: Number($("watchEvery").value) || 30 }, () => said("Saved."));
+  chrome.storage.local.set({ flexRoll: roll, flexPass: pass, watchEvery: Number($("watchEvery").value) || 30 }, () => {
+    $("flexPass").value = "";
+    showSaved(roll);
+  });
 });
 $("watchEvery").addEventListener("change", () => chrome.storage.local.set({ watchEvery: Number($("watchEvery").value) || 30 }));
 $("clearLogin").addEventListener("click", () => {
   $("flexRoll").value = "";
   $("flexPass").value = "";
-  syncOwner();
-  chrome.storage.local.remove(["flexRoll", "flexPass"], () => said("Removed."));
+  chrome.storage.local.remove(["flexRoll", "flexPass"], () => showSaved(""));
 });
 
 // ---- Dark mode for the popup only (FLEX keeps its own switch) ----
