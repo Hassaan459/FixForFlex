@@ -35,6 +35,9 @@ html.mw-theme.mw-dark {
   --side: var(--paper); --side-ink: var(--ink-2); --side-quiet: var(--ink-3); --side-hi: var(--tint);
   color-scheme: dark;
 }
+/* Accent: the FLEX logo colours. Sky blue in light mode, lime green in dark mode. Every page uses var(--accent). */
+html.mw-theme { --accent: #00ADEF; }
+html.mw-theme.mw-dark { --accent: #A6CE39; }
 html.mw-theme.mw-side-collapsed { --side-w: 68px; }
 
 /* ---------- Base ---------- */
@@ -102,7 +105,8 @@ html.mw-theme.mw-side-collapsed .mw-brand-name { display: none; }
   html.mw-theme .m-aside-left, html.mw-theme .m-brand { width: var(--side-w) !important; }
   html.mw-theme .m-body { padding-left: var(--side-w) !important; }
   html.mw-theme .m-footer { margin-left: var(--side-w) !important; }
-  html.mw-theme .m-aside-left, html.mw-theme .m-brand, html.mw-theme .m-body, html.mw-theme .m-footer { transition: width .2s ease, padding-left .2s ease, margin-left .2s ease !important; }
+  /* Animate only when the Collapse button is pressed, never while a page loads */
+  html.mw-theme.mw-side-anim .m-aside-left, html.mw-theme.mw-side-anim .m-brand, html.mw-theme.mw-side-anim .m-body, html.mw-theme.mw-side-anim .m-footer { transition: width .2s ease, padding-left .2s ease, margin-left .2s ease !important; }
 }
 html.mw-theme .m-aside-menu .m-menu__nav { padding: 8px 12px 18px !important; }
 html.mw-theme .m-aside-menu .m-menu__item-here { display: none !important; }

@@ -1,8 +1,8 @@
 /* FixForFlex: Grade Report page, in the shared theme.
    Only loaded on /Student/GradeReport. Keeps FLEX's four-semesters-per-row grid.
    gradereport.js wraps each semester in .mw-gr-sem and gives grade cells a status class. */
-html.mw-theme { --gr-accent: #8a5a00; }
-html.mw-theme.mw-dark { --gr-accent: #e0b154; }
+html.mw-theme { --gr-accent: var(--accent); }
+html.mw-theme.mw-dark { --gr-accent: var(--accent); }
 
 /* Key line under the heading */
 html.mw-theme .mw-gr-key {

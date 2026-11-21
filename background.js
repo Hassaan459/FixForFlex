@@ -6,8 +6,7 @@ const SEM_RECHECK_HOURS = 6; // how often to look again for a new semester
 const LOGIN_URL = "https://flexstudent.nu.edu.pk/Login";
 const CHECK_EVERY_MINUTES = 1;
 
-const ICON =
-  "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mP8z8BQDwAEhQGAhKmMIQAAAABJRU5ErkJggg==";
+const ICON = "icons/icon128.png";
 
 let busy = false;
 

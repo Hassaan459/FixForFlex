@@ -36,8 +36,6 @@ html.mw-theme .card.mw-grand .mw-stats { border-top: 0 !important; }
 
 
 /* ===== Round 2 (marks page only): transcript's amber accent, square corners, clear grouping ===== */
-html.mw-theme { --accent: #8a5a00; --accent-wash: rgba(138, 90, 0, .06); }
-html.mw-theme.mw-dark { --accent: #e0b154; --accent-wash: rgba(224, 177, 84, .07); }
 
 /* Semester picker: same box, border and type as the page, no browser chrome */
 html.mw-theme select#SemId {
@@ -97,3 +95,15 @@ html.mw-theme .m-header .m-subheader__title { visibility: hidden !important; }
 html.mw-theme .card.mw-grand .card-header .mw-sum { transition: opacity .25s ease, transform .25s ease; }
 html.mw-theme .card.mw-grand .card-header .btn-link:not(.collapsed) .mw-sum { opacity: 0; transform: translateX(12px); pointer-events: none; }
 html.mw-theme .card.mw-grand .mw-stats.mw-stats-raw { grid-template-columns: 1.5fr 1fr 2fr; }
+
+/* Panel header: "Student Marks" and the course codes share one baseline */
+html.mw-theme body .m-portlet .m-portlet__head { display: flex !important; align-items: flex-end; justify-content: space-between; flex-wrap: wrap; }
+html.mw-theme body .m-portlet .m-portlet__head::before, html.mw-theme body .m-portlet .m-portlet__head::after { display: none !important; }
+html.mw-theme body .m-portlet .m-portlet__head-caption, html.mw-theme body .m-portlet .m-portlet__head-tools { display: block !important; padding-bottom: 0 !important; }
+html.mw-theme body .m-portlet .m-portlet__head-caption { padding-bottom: 14px !important; line-height: 1.2; }
+html.mw-theme body .m-portlet .m-portlet__head-title, html.mw-theme body .m-portlet .m-portlet__head-text { display: inline !important; }
+/* Course codes: the page's own font, a touch heavier; the selected one bold */
+html.mw-theme body .m-tabs-line .m-tabs__link, html.mw-theme body .nav-tabs .nav-link {
+  font-family: var(--sans) !important; font-size: 14.5px !important; font-weight: 600 !important; letter-spacing: .01em !important; padding: 10px 10px 14px !important;
+}
+html.mw-theme body .m-tabs-line .m-tabs__link.active, html.mw-theme body .nav-tabs .nav-link.active { font-weight: 800 !important; }
