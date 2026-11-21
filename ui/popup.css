@@ -26,3 +26,5 @@ footer { display: flex; justify-content: space-between; padding: 10px 14px; font
 #login .every { margin-bottom: 6px; }
 #login .every select { width: 130px; }
 .saverow .btn { height: 28px; padding: 0 10px; font-size: 12.5px; }
+#loginSaved { margin-bottom: 8px; }
+#loginSaved .btn { height: 28px; padding: 0 10px; font-size: 12.5px; }

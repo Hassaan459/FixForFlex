@@ -24,11 +24,21 @@
       <label class="switch" title="Check marks in the background"><input type="checkbox" id="watch"><span></span></label>
     </div>
     <div id="login" hidden>
-      <p class="quiet small hint">FLEX signs you out after a while. Save your sign-in so checks keep working. It stays in this browser and is typed only into FLEX's sign-in page.</p>
-      <input type="text" id="flexRoll" placeholder="Roll number (22I-0000)" autocomplete="off" spellcheck="false">
-      <div class="pw">
-        <input type="password" id="flexPass" placeholder="Password" autocomplete="off">
-        <button type="button" class="btn" id="showPass">Show</button>
+      <div id="loginForm">
+        <p class="quiet small hint">FLEX signs you out after a while. Save your sign-in so checks keep working. It stays in this browser and is typed only into FLEX's sign-in page.</p>
+        <input type="text" id="flexRoll" placeholder="Roll number (22I-0000)" autocomplete="off" spellcheck="false">
+        <div class="pw">
+          <input type="password" id="flexPass" placeholder="Password" autocomplete="off">
+          <button type="button" class="btn" id="showPass">Show</button>
+        </div>
+        <div class="line saverow">
+          <span class="quiet small" id="saved" aria-live="polite"></span>
+          <button type="button" class="btn" id="saveLogin">Save</button>
+        </div>
+      </div>
+      <div class="line" id="loginSaved" hidden>
+        <span class="small">Signed in as <b id="savedRoll"></b></span>
+        <button type="button" class="btn" id="clearLogin">Remove account</button>
       </div>
       <div class="line every" id="everyRow" hidden>
         <span class="small">Check every</span>
@@ -39,13 +49,6 @@
           <option value="30">30 minutes</option>
           <option value="60">1 hour</option>
         </select>
-      </div>
-      <div class="line saverow">
-        <span class="quiet small" id="saved" aria-live="polite"></span>
-        <span>
-          <button type="button" class="btn" id="clearLogin">Remove</button>
-          <button type="button" class="btn" id="saveLogin">Save</button>
-        </span>
       </div>
     </div>
     <button type="button" class="btn primary wide" id="check">Check now</button>
