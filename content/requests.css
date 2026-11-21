@@ -57,3 +57,10 @@ html.mw-theme .modal-body select { border-radius: 0 !important; }
 html.mw-theme .modal-body input[type="file"] { display: block; margin-top: 6px; color: var(--ink-2); font-size: 13px; }
 html.mw-theme .modal-header .close { color: var(--ink-2) !important; text-shadow: none !important; opacity: 1; }
 html.mw-theme .modal-backdrop.show { opacity: .6; }
+
+/* Multi-line notices, rebuilt by requests.js */
+html.mw-theme .m-alert .ff-note { display: flex; gap: 10px; line-height: 1.55; padding: 2px 0; }
+html.mw-theme .m-alert .ff-note-k { flex: 0 0 56px; white-space: nowrap; }
+html.mw-theme .m-alert .ff-note-act { margin: 10px 0 2px 66px; }
+html.mw-theme .m-alert .ff-note-act .btn { margin-left: 0 !important; }
+html.mw-theme .m-alert .ff-note-v { flex: 1; min-width: 0; }
