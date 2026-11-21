@@ -46,27 +46,14 @@ $("check").addEventListener("click", () => {
 
 $("settings").addEventListener("click", (e) => { e.preventDefault(); chrome.runtime.openOptionsPage(); });
 
-// ---- Dark mode: same setting as the switch on FLEX's top bar ----
+// ---- Dark mode for the popup and Settings only (FLEX keeps its own switch) ----
 const isDark = () => document.documentElement.classList.contains("dark");
 setTimeout(() => ($("dark").checked = isDark()), 0);
-chrome.storage.local.get("mwMode", () => ($("dark").checked = isDark()));
-$("dark").addEventListener("change", async () => {
+chrome.storage.local.get("uiMode", () => ($("dark").checked = isDark()));
+$("dark").addEventListener("change", () => {
   const mode = $("dark").checked ? "dark" : "light";
-  await chrome.storage.local.set({ mwMode: mode });
-  // Repaint any open FLEX tabs straight away.
-  const tabs = await chrome.tabs.query({ url: "https://flexstudent.nu.edu.pk/*" });
-  for (const t of tabs) {
-    chrome.scripting.executeScript({
-      target: { tabId: t.id },
-      func: (m) => {
-        document.documentElement.classList.toggle("mw-dark", m === "dark");
-        try { localStorage.setItem("mwMode", m); } catch (_) {}
-        const btn = document.querySelector(".mw-mode-btn span");
-        if (btn) btn.textContent = m === "dark" ? "Light" : "Dark";
-      },
-      args: [mode],
-    }).catch(() => {});
-  }
+  try { localStorage.setItem("uiMode", mode); } catch (_) {}
+  chrome.storage.local.set({ uiMode: mode });
 });
 
 // ---- Feedback quick fill, only when the active tab is a feedback form ----
