@@ -1,0 +1,2 @@
+/* FixForFlex: credit hours and fee estimate under each study plan semester heading. */
+.ff-fee { margin: -4px 0 10px; font: 500 13px/1.3 var(--sans, inherit); color: var(--ink-3, #626b79); font-variant-numeric: tabular-nums; }

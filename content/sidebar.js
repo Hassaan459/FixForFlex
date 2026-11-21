@@ -106,6 +106,7 @@
     };
     btn.addEventListener("click", () => {
       const c = !root.classList.contains("mw-side-collapsed");
+      root.classList.add("mw-side-anim");
       root.classList.toggle("mw-side-collapsed", c);
       try { localStorage.setItem(KEY, c ? "1" : "0"); } catch (_) {}
       paint();
@@ -125,6 +126,7 @@
     logo.appendChild(name);
   }
 
+  // This script runs at document_start, so the saved state is set before FLEX draws anything.
   try { if (localStorage.getItem(KEY) === "1") root.classList.add("mw-side-collapsed"); } catch (_) {}
   if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", () => { build(); brand(); });
   else { build(); brand(); }

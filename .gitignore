@@ -1,8 +1,9 @@
-# Your FLEX login. Copy config.example.js to config.js and fill it in.
+# Old versions kept the FLEX login here. It now lives in the Settings page.
 config.js
 
 # Saved FLEX pages contain personal student data
 *.html
+!ui/*.html
 *_files/
 
 # OS / editor junk
@@ -11,5 +12,6 @@ Thumbs.db
 desktop.ini
 .vscode/
 *.zip
+dist/
 *.crx
 *.pem
