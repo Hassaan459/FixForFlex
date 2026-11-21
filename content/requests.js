@@ -2,7 +2,49 @@
 // Tags table columns so requests.css can align them, colours real problem statuses, puts the
 // Withdraw buttons in a row, and says so when a table is empty instead of showing a bare header.
 (() => {
+  // Multi-line notices ("Note 1 : … <br> Note 2 : …"): one line per note with the labels lined up,
+  // and the "More Instruction" button on its own line underneath instead of wedged into the text.
+  function tidyNotes() {
+    for (const text of document.querySelectorAll(".m-alert .m-alert__text")) {
+      if (text.dataset.ffNotes || !text.querySelector("br")) continue;
+      text.dataset.ffNotes = "1";
+      const buttons = [...text.querySelectorAll("a.btn")].map((a) => a.closest("strong") || a);
+      buttons.forEach((b) => b.remove());
+      const lines = [[]];
+      for (const node of [...text.childNodes]) {
+        if (node.nodeName === "BR") lines.push([]);
+        else lines[lines.length - 1].push(node);
+      }
+      text.textContent = "";
+      for (const nodes of lines) {
+        const row = document.createElement("div");
+        row.className = "ff-note";
+        nodes.forEach((n) => row.appendChild(n));
+        // Drop the &nbsp; padding FLEX puts after each label.
+        for (const n of row.childNodes) if (n.nodeType === 3) n.textContent = n.textContent.replace(/\u00a0/g, " ").replace(/^\s+/, n === row.firstChild ? "" : " ");
+        const label = row.querySelector("strong");
+        if (label && /^\s*note/i.test(label.textContent) && row.firstElementChild === label) {
+          label.textContent = label.textContent.replace(/\u00a0/g, " ").replace(/\s*:\s*$/, "").trim();
+          label.classList.add("ff-note-k");
+        }
+        // Everything after the label goes in one span so it wraps as a single block of text.
+        const val = document.createElement("span");
+        val.className = "ff-note-v";
+        for (const n of [...row.childNodes]) if (!(n.classList && n.classList.contains("ff-note-k"))) val.appendChild(n);
+        row.appendChild(val);
+        if (row.textContent.trim()) text.appendChild(row);
+      }
+      if (buttons.length) {
+        const act = document.createElement("div");
+        act.className = "ff-note-act";
+        buttons.forEach((b) => act.appendChild(b));
+        text.appendChild(act);
+      }
+    }
+  }
+
   function run() {
+    tidyNotes();
     const table = document.querySelector(".m-portlet .m-section__content .table");
     if (!table) return;
     const heads = [...table.querySelectorAll("thead th")];
