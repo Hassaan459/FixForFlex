@@ -1,10 +1,17 @@
-importScripts("config.js"); // gives FLEX_ROLL_NO and FLEX_PASSWORD
+// Settings live in chrome.storage.local, set from the Settings page (ui/settings.html):
+//   flexRoll, flexPass   FLEX sign-in, used only to sign in again when the session has expired
+//   watchEnabled         background marks checks on/off (off until the user turns it on)
+//   watchEvery           minutes between checks
+const DEFAULTS = { watchEnabled: false, watchEvery: 5 };
+async function settings() {
+  const st = await chrome.storage.local.get(["flexRoll", "flexPass", "watchEnabled", "watchEvery"]);
+  return { ...DEFAULTS, ...Object.fromEntries(Object.entries(st).filter(([, v]) => v !== undefined)) };
+}
 
 // FLEX marks page. The semester (?semid=…) is worked out automatically, see currentSemId().
 const MARKS_PAGE = "https://flexstudent.nu.edu.pk/Student/StudentMarks";
 const SEM_RECHECK_HOURS = 6; // how often to look again for a new semester
 const LOGIN_URL = "https://flexstudent.nu.edu.pk/Login";
-const CHECK_EVERY_MINUTES = 1;
 
 const ICON = "icons/icon128.png";
 
@@ -201,7 +208,7 @@ async function waitForLogin(tabId, seconds) {
   return false;
 }
 
-async function autoLogin() {
+async function autoLogin(roll, pass) {
   const win = await chrome.windows.create({
     url: LOGIN_URL,
     type: "popup",
@@ -219,7 +226,7 @@ async function autoLogin() {
     const [{ result }] = await chrome.scripting.executeScript({
       target: { tabId },
       func: fillAndSubmit,
-      args: [FLEX_ROLL_NO, FLEX_PASSWORD],
+      args: [roll, pass],
     });
 
     let loggedIn = false;
@@ -237,32 +244,45 @@ async function autoLogin() {
   }
 }
 
+// Remembers how the last check went, for the popup.
+const setStatus = (status) => chrome.storage.local.set({ lastCheck: { at: Date.now(), status } });
+
 async function check(manual = false) {
   if (busy) return;
   busy = true;
   try {
+    const cfg = await settings();
+    if (!manual && !cfg.watchEnabled) return;
     let { ok, rows, semId } = await fetchRows();
 
     if (!ok) {
+      if (!cfg.flexRoll || !cfg.flexPass) {
+        await setStatus("signed-out");
+        if (manual) notify("FixForFlex", "Sign in to FLEX, or add your sign-in in Settings, then try again.");
+        return;
+      }
       const { loginBlocked } = await chrome.storage.local.get("loginBlocked");
-      if (loginBlocked && !manual) return;
+      if (loginBlocked && !manual) { await setStatus("login-failed"); return; }
 
-      const loggedIn = await autoLogin();
+      const loggedIn = await autoLogin(cfg.flexRoll, cfg.flexPass);
       if (!loggedIn) {
         await chrome.storage.local.set({ loginBlocked: true });
-        notify("FixForFlex: login failed", "Auto-login did not work. Check config.js, then click the extension icon to retry.");
+        await setStatus("login-failed");
+        notify("FixForFlex: sign-in failed", "Check your roll number and password in Settings, then press Check now.");
         return;
       }
       await chrome.storage.local.set({ loginBlocked: false });
       ({ ok, rows, semId } = await fetchRows(true)); // just signed in: look the semester up again
       if (!ok) {
-        notify("FixForFlex", "Logged in, but could not read the marks page.");
+        await setStatus("error");
+        notify("FixForFlex", "Signed in, but could not read the marks page.");
         return;
       }
     } else {
       await chrome.storage.local.set({ loginBlocked: false });
     }
 
+    await setStatus("ok");
     const { rows: old, rowsSemId } = await chrome.storage.local.get(["rows", "rowsSemId"]);
     await chrome.storage.local.set({ rows, rowsSemId: semId || rowsSemId || null });
 
@@ -284,20 +304,79 @@ async function check(manual = false) {
       notify("FixForFlex", "Checked just now. No changes.");
     }
   } catch (e) {
+    await setStatus("error");
     if (manual) notify("FixForFlex", "Check failed: " + e.message);
   } finally {
     busy = false;
   }
 }
 
-function setupAlarm() {
-  chrome.alarms.create("check-marks", { periodInMinutes: CHECK_EVERY_MINUTES });
+// ---- Update notice ----
+// Unpacked installs never update themselves, so once a day look at the latest GitHub release
+// and remember it; the popup shows a download link when it is newer than this copy.
+const RELEASES_API = "https://api.github.com/repos/Hassaan459/FixForFlex/releases/latest";
+
+function newer(a, b) { // true if version a > version b ("3.10" > "3.9")
+  const pa = String(a).replace(/^v/i, "").split(".").map(Number);
+  const pb = String(b).replace(/^v/i, "").split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const x = pa[i] || 0, y = pb[i] || 0;
+    if (x !== y) return x > y;
+  }
+  return false;
 }
 
-chrome.runtime.onInstalled.addListener(() => {
-  setupAlarm();
-  check(true);
+async function checkForUpdate() {
+  try {
+    const res = await fetch(RELEASES_API, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
+    if (!res.ok) return; // offline, rate-limited, or the repo is private: say nothing
+    const rel = await res.json();
+    const version = String(rel.tag_name || "").replace(/^v/i, "");
+    const current = chrome.runtime.getManifest().version;
+    const zip = (rel.assets || []).find((a) => /\.zip$/i.test(a.name));
+    await chrome.storage.local.set({
+      update: newer(version, current) ? { version, url: zip ? zip.browser_download_url : rel.html_url, page: rel.html_url } : null,
+    });
+  } catch (_) {}
+}
+
+// ---- Alarms ----
+async function setupAlarms() {
+  const cfg = await settings();
+  await chrome.alarms.clear("check-marks");
+  if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: Math.max(1, Number(cfg.watchEvery) || 5) });
+  if (!(await chrome.alarms.get("check-update"))) chrome.alarms.create("check-update", { delayInMinutes: 1, periodInMinutes: 24 * 60 });
+}
+
+chrome.runtime.onInstalled.addListener(async ({ reason }) => {
+  if (reason === "update") {
+    // Copies from before the Settings page kept the sign-in in config.js and always watched.
+    // Keep watching (every minute, as before) and ask once for the sign-in.
+    const st = await chrome.storage.local.get(["rows", "watchEnabled", "flexRoll"]);
+    if (st.rows && st.watchEnabled === undefined) {
+      await chrome.storage.local.set({ watchEnabled: true, watchEvery: 1 });
+      if (!st.flexRoll) chrome.runtime.openOptionsPage();
+    }
+  }
+  await setupAlarms();
+  checkForUpdate();
+  if (reason === "install") chrome.runtime.openOptionsPage(); // first run: show Settings once
 });
-chrome.runtime.onStartup.addListener(setupAlarm);
-chrome.alarms.onAlarm.addListener((a) => a.name === "check-marks" && check());
-chrome.action.onClicked.addListener(() => check(true));
+chrome.runtime.onStartup.addListener(setupAlarms);
+chrome.alarms.onAlarm.addListener((a) => {
+  if (a.name === "check-marks") check();
+  if (a.name === "check-update") checkForUpdate();
+});
+// Settings page changed the schedule: start over with the new one.
+chrome.storage.onChanged.addListener((ch, area) => {
+  if (area !== "local") return;
+  if (ch.watchEnabled || ch.watchEvery) {
+    setupAlarms();
+    if (ch.watchEnabled && ch.watchEnabled.newValue === true && !ch.watchEnabled.oldValue) check(true);
+  }
+  if (ch.flexRoll || ch.flexPass) chrome.storage.local.set({ loginBlocked: false });
+});
+// From the popup.
+chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
+  if (msg && msg.type === "check-now") { check(true).then(() => reply({ done: true })); return true; }
+});

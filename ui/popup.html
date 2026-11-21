@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <link rel="stylesheet" href="ui.css">
+  <link rel="stylesheet" href="popup.css">
+  <script src="mode.js"></script>
+</head>
+<body>
+  <header>
+    <img src="../icons/icon32.png" alt="" width="20" height="20">
+    <strong>FixForFlex</strong>
+    <span class="quiet" id="version"></span>
+  </header>
+
+  <a class="update" id="update" hidden target="_blank" rel="noopener"></a>
+
+  <section>
+    <div class="line">
+      <div>
+        <div class="bold">Marks alerts</div>
+        <div class="quiet small" id="status">…</div>
+      </div>
+      <label class="switch" title="Check marks in the background"><input type="checkbox" id="watch"><span></span></label>
+    </div>
+    <button type="button" class="btn primary wide" id="check">Check now</button>
+  </section>
+
+  <section id="feedback" hidden>
+    <div class="bold">Feedback form</div>
+    <div class="quiet small">Tick one answer for every question, then change the ones you feel differently about.</div>
+    <div class="fill">
+      <select id="answer"></select>
+      <button type="button" class="btn" id="fill">Fill</button>
+    </div>
+  </section>
+
+  <section class="line">
+    <span>Dark mode</span>
+    <label class="switch"><input type="checkbox" id="dark"><span></span></label>
+  </section>
+
+  <footer>
+    <a href="#" id="settings">Settings</a>
+    <a href="https://flexstudent.nu.edu.pk/" target="_blank" rel="noopener">Open FLEX</a>
+  </footer>
+  <script src="popup.js"></script>
+</body>
+</html>
