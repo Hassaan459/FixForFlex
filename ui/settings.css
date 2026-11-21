@@ -17,3 +17,4 @@ section p { margin: 0 0 14px; }
 footer { display: flex; align-items: center; justify-content: flex-end; gap: 14px; padding: 16px 24px; }
 footer .btn { min-width: 96px; }
 [hidden] { display: none !important; }
+input:disabled, select:disabled { opacity: .5; cursor: not-allowed; }
