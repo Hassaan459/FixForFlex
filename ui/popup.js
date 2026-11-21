@@ -1,4 +1,4 @@
-// FixForFlex toolbar popup: marks alerts, Check now, feedback quick fill, dark mode, update notice.
+// FixForFlex toolbar popup: marks alerts (with the FLEX sign-in they use), Check now, feedback quick fill, dark mode, update notice.
 const $ = (id) => document.getElementById(id);
 $("version").textContent = "v" + chrome.runtime.getManifest().version;
 
@@ -12,10 +12,11 @@ function ago(t) {
 
 function render(st) {
   $("watch").checked = !!st.watchEnabled;
+  $("login").hidden = !st.watchEnabled;
   const last = st.lastCheck;
   let text;
-  if (last && last.status === "signed-out") text = "Signed out of FLEX. Sign in, or add your sign-in in Settings.";
-  else if (last && last.status === "login-failed") text = "Couldn't sign in. Check your sign-in in Settings.";
+  if (last && last.status === "signed-out") text = "Signed out of FLEX. Sign in, or save your sign-in below.";
+  else if (last && last.status === "login-failed") text = "Couldn't sign in. Check your roll number and password below.";
   else if (last && last.status === "error") text = `Last check failed ${ago(last.at)}.`;
   else if (last) text = `Last checked ${ago(last.at)}.`;
   else text = "Not checked yet.";
@@ -44,9 +45,55 @@ $("check").addEventListener("click", () => {
   });
 });
 
-$("settings").addEventListener("click", (e) => { e.preventDefault(); chrome.runtime.openOptionsPage(); });
+// ---- FLEX sign-in, shown only while alerts are on ----
+chrome.storage.local.get(["flexRoll", "flexPass", "watchEvery"], (st) => {
+  $("flexRoll").value = st.flexRoll || "";
+  $("flexPass").value = st.flexPass || "";
+  $("watchEvery").value = String(st.watchEvery || 30);
+  if (!$("watchEvery").value) $("watchEvery").value = "30";
+  syncOwner();
+});
 
-// ---- Dark mode for the popup and Settings only (FLEX keeps its own switch) ----
+// Only the developer's own copy (by roll number, hashed) can change the interval; everyone else checks every 30 minutes.
+const OWNER_HASH = "c2f8eeb78c0a0b1a25d9640795f5782d2986cc132eef84574d90688173739706";
+async function isOwner(roll) {
+  const norm = String(roll || "").toLowerCase().replace(/[^a-z0-9]/g, "");
+  if (!norm) return false;
+  const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(norm));
+  return [...new Uint8Array(buf)].map((b) => b.toString(16).padStart(2, "0")).join("") === OWNER_HASH;
+}
+async function syncOwner() { $("everyRow").hidden = !(await isOwner($("flexRoll").value)); }
+$("flexRoll").addEventListener("input", syncOwner);
+
+$("showPass").addEventListener("click", () => {
+  const p = $("flexPass");
+  p.type = p.type === "password" ? "text" : "password";
+  $("showPass").textContent = p.type === "password" ? "Show" : "Hide";
+});
+
+let savedTimer;
+function said(text) {
+  $("saved").textContent = text;
+  clearTimeout(savedTimer);
+  savedTimer = setTimeout(() => ($("saved").textContent = ""), 2500);
+}
+
+$("saveLogin").addEventListener("click", () => {
+  const roll = $("flexRoll").value.trim().toUpperCase();
+  const pass = $("flexPass").value;
+  if (!roll || !pass) return said("Fill in both.");
+  $("flexRoll").value = roll;
+  chrome.storage.local.set({ flexRoll: roll, flexPass: pass, watchEvery: Number($("watchEvery").value) || 30 }, () => said("Saved."));
+});
+$("watchEvery").addEventListener("change", () => chrome.storage.local.set({ watchEvery: Number($("watchEvery").value) || 30 }));
+$("clearLogin").addEventListener("click", () => {
+  $("flexRoll").value = "";
+  $("flexPass").value = "";
+  syncOwner();
+  chrome.storage.local.remove(["flexRoll", "flexPass"], () => said("Removed."));
+});
+
+// ---- Dark mode for the popup only (FLEX keeps its own switch) ----
 const isDark = () => document.documentElement.classList.contains("dark");
 setTimeout(() => ($("dark").checked = isDark()), 0);
 chrome.storage.local.get("uiMode", () => ($("dark").checked = isDark()));

@@ -1,4 +1,4 @@
-// Settings live in chrome.storage.local, set from the Settings page (ui/settings.html):
+// Settings live in chrome.storage.local, set from the toolbar popup (ui/popup.html):
 //   flexRoll, flexPass   FLEX sign-in, used only to sign in again when the session has expired
 //   watchEnabled         background marks checks on/off (off until the user turns it on)
 //   watchEvery           minutes between checks (owner only; everyone else checks every 30 minutes)
@@ -267,7 +267,7 @@ async function check(manual = false) {
     if (!ok) {
       if (!cfg.flexRoll || !cfg.flexPass) {
         await setStatus("signed-out");
-        if (manual) notify("FixForFlex", "Sign in to FLEX, or add your sign-in in Settings, then try again.");
+        if (manual) notify("FixForFlex", "Sign in to FLEX, or save your sign-in in the FixForFlex popup, then try again.");
         return;
       }
       const { loginBlocked } = await chrome.storage.local.get("loginBlocked");
@@ -277,7 +277,7 @@ async function check(manual = false) {
       if (!loggedIn) {
         await chrome.storage.local.set({ loginBlocked: true });
         await setStatus("login-failed");
-        notify("FixForFlex: sign-in failed", "Check your roll number and password in Settings, then press Check now.");
+        notify("FixForFlex: sign-in failed", "Check your roll number and password in the FixForFlex popup, then press Check now.");
         return;
       }
       await chrome.storage.local.set({ loginBlocked: false });
@@ -361,23 +361,21 @@ async function setupAlarms() {
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   if (reason === "update") {
     // Copies from before the Settings page kept the sign-in in config.js and always watched.
-    // Keep watching (every minute, as before) and ask once for the sign-in.
+    // Keep watching (every minute, as before).
     const st = await chrome.storage.local.get(["rows", "watchEnabled", "flexRoll"]);
     if (st.rows && st.watchEnabled === undefined) {
       await chrome.storage.local.set({ watchEnabled: true, watchEvery: 1 });
-      if (!st.flexRoll) chrome.runtime.openOptionsPage();
     }
   }
   await setupAlarms();
   checkForUpdate();
-  if (reason === "install") chrome.runtime.openOptionsPage(); // first run: show Settings once
 });
 chrome.runtime.onStartup.addListener(setupAlarms);
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === "check-marks") check();
   if (a.name === "check-update") checkForUpdate();
 });
-// Settings page changed the schedule: start over with the new one.
+// Popup changed the schedule: start over with the new one.
 chrome.storage.onChanged.addListener((ch, area) => {
   if (area !== "local") return;
   if (ch.watchEnabled || ch.watchEvery || ch.flexRoll) {
