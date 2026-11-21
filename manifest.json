@@ -33,10 +33,6 @@
       "128": "icons/icon128.png"
     }
   },
-  "options_ui": {
-    "page": "ui/settings.html",
-    "open_in_tab": true
-  },
   "content_scripts": [
     {
       "matches": [

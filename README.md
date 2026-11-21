@@ -18,7 +18,7 @@ A Chrome extension that cleans up the FAST-NU FLEX student portal. It's unoffici
 4. Click **Load unpacked** and pick the unzipped `FixForFlex` folder.
 5. Pin it: click the puzzle icon in the toolbar, then the pin next to FixForFlex.
 
-Open FLEX and the new look is there. Settings opens once after install. Marks alerts are off until you turn them on.
+Open FLEX and the new look is there. Marks alerts are off until you turn them on.
 
 ## Update
 
@@ -26,16 +26,16 @@ The popup tells you when a new version is out. Download the new zip, unzip it ov
 
 ## Marks alerts
 
-Turn them on in the popup or in Settings. FixForFlex checks your marks page every 30 minutes and shows a notification when something changes.
+Turn them on in the toolbar popup. FixForFlex checks your marks page every 30 minutes and shows a notification when something changes.
 
-FLEX signs you out after a while. If you save your roll number and password in Settings, FixForFlex signs back in on its own. They're stored only in this browser's extension storage and only ever typed into FLEX's own sign-in page. If you leave them empty, checks only work while you're signed in.
+FLEX signs you out after a while. If you save your roll number and password in the popup (they show up once alerts are on), FixForFlex signs back in on its own. They're stored only in this browser's extension storage and only ever typed into FLEX's own sign-in page. If you leave them empty, checks only work while you're signed in.
 
 ## For developers
 
 - `manifest.json`: the extension manifest
 - `background.js`: marks checks, notifications and the update check
 - `content/`: per-page scripts and styles for flexstudent.nu.edu.pk
-- `ui/`: the toolbar popup and the Settings page
+- `ui/`: the toolbar popup
 - `fonts/`: bundled web fonts (see `fonts/LICENSE.txt`)
 
 To make a release, bump `version` in `manifest.json`, commit, then push a matching tag (`git tag v3.1 && git push origin v3.1`). GitHub Actions builds the zip and attaches it to the release. To build the zip locally, run `scripts\build-zip.ps1`.
