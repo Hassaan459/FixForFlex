@@ -24,6 +24,10 @@ Open FLEX and the new look is there. Notifications are off until you turn them o
 
 The popup tells you when a new version is out. Download the new zip, unzip it over the old folder (replace the files), then click the reload icon on FixForFlex in `chrome://extensions`. Your settings are kept.
 
+## Remember me
+
+Tick **Remember me** when you sign in to FLEX and you stay signed in: FixForFlex keeps FLEX's session from timing out while Chrome is open, until you press Logout. If the session ends anyway (Chrome was closed or the PC slept) and your roll number and password are saved in the popup, FixForFlex signs you back in out of sight.
+
 ## Notifications
 
 To get notifications, turn on Notifications in the toolbar popup and save your FLEX roll number and password there. FixForFlex then looks at your marks page every 30 minutes, even while FLEX is closed, and notifies you when something changes. With Notifications off, it sends none.
@@ -36,6 +40,7 @@ FLEX signs you out after a while. With your roll number and password saved, FixF
 - `background.js`: notifications, signing in again and the update check
 - `content/`: per-page scripts and styles for flexstudent.nu.edu.pk
 - `ui/`: the toolbar popup
+- `offscreen/`: the hidden page used to sign in again in the background
 - `fonts/`: bundled web fonts (see `fonts/LICENSE.txt`)
 
 To make a release, bump `version` in `manifest.json`, commit, then push a matching tag (`git tag v1.1 && git push origin v1.1`). GitHub Actions builds the zip and attaches it to the release. To build the zip locally, run `scripts\build-zip.ps1`.

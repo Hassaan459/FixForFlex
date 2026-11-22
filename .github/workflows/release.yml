@@ -19,7 +19,7 @@ jobs:
       - name: Build zip
         run: |
           mkdir -p dist/FixForFlex
-          cp -r manifest.json background.js content fonts icons ui README.md dist/FixForFlex/
+          cp -r manifest.json background.js content offscreen fonts icons ui README.md dist/FixForFlex/
           cd dist && zip -qr "FixForFlex-$VERSION.zip" FixForFlex
       - name: Publish release
         env:
