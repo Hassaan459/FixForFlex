@@ -454,20 +454,44 @@ const pageTries = new Map(); // tabId -> time of last try
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   if (msg && msg.type === "flex-signed-in") {
     if (sender.tab) pageTries.delete(sender.tab.id);
+    if (typeof msg.home === "string" && msg.home.startsWith("https://flexstudent.nu.edu.pk/")) {
+      chrome.storage.local.set({ mwHomeUrl: msg.home });
+    }
     return;
   }
+  const ours = sender.origin === "https://flexstudent.nu.edu.pk" && sender.tab && sender.frameId === 0;
+  // content/signin-fast.js: FLEX's sign-in address was opened. Still signed in? Then go home.
+  if (msg && msg.type === "remember-check") {
+    if (pending || !ours) return reply(null);
+    (async () => {
+      const { on } = await rememberState();
+      if (!on) return reply({ on: false });
+      const url = await homeUrl();
+      reply({ on: true, signedIn: await signedIn(), url });
+    })().catch(() => reply(null));
+    return true;
+  }
   if (!msg || msg.type !== "remember-signin") return;
-  if (pending || sender.origin !== "https://flexstudent.nu.edu.pk" || !sender.tab || sender.frameId !== 0) return reply(null);
+  if (pending || !ours) return reply(null);
   const last = pageTries.get(sender.tab.id) || 0;
   if (Date.now() - last < 120e3) return reply(null);
   rememberedSignIn().then(async (creds) => {
     const { rememberBlocked } = await chrome.storage.local.get("rememberBlocked");
     if (!creds || rememberBlocked) return reply(null);
+    // Still signed in after all (signin-fast.js is taking you home): don't sign in a second time.
+    if (await signedIn()) return reply(null);
     pageTries.set(sender.tab.id, Date.now());
     reply(creds);
   });
   return true;
 });
+
+// FLEX's home page: the sidebar's Home link as last seen (it carries a ?dump= token), else /Home.
+async function homeUrl() {
+  const { mwHomeUrl } = await chrome.storage.local.get("mwHomeUrl");
+  return mwHomeUrl || "https://flexstudent.nu.edu.pk/Home";
+}
+
 chrome.tabs.onRemoved.addListener((id) => pageTries.delete(id));
 
 // ---- Update notice ----
