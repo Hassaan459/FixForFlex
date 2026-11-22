@@ -131,22 +131,24 @@ html.mw-theme .m-login .alert {
 html.mw-theme .m-login .alert-danger { border-left-color: var(--bad) !important; }
 html.mw-theme .m-login .alert .close { color: var(--ink-3) !important; opacity: 1; }
 
-/* ---------- Welcome panel (right) ---------- */
+/* ---------- Welcome panel (right) ----------
+   Uses paper and ink directly (not the sidebar colours), so it stays readable whatever the sidebar looks like. */
 html.mw-theme .m-login.m-login--1 .m-login__content {
-  background: var(--side) !important; background-image: none !important; position: relative;
-  border-left: 1px solid var(--rule);
+  background: var(--paper) !important; background-image: none !important; position: relative;
+  border-left: 1px solid var(--rule) !important;
 }
 html.mw-theme .m-login.m-login--1 .m-login__content .m-login__welcome {
-  color: #fff !important; font-size: 40px !important; font-weight: 800 !important; letter-spacing: -.025em; line-height: 1.15; margin: 0 0 16px !important;
+  display: block !important; visibility: visible !important; opacity: 1 !important;
+  color: var(--ink) !important; font-size: 40px !important; font-weight: 800 !important; letter-spacing: -.025em; line-height: 1.15; margin: 0 0 16px !important;
 }
 html.mw-theme .m-login.m-login--1 .m-login__content .m-login__msg {
-  color: var(--side-ink) !important; opacity: .8; font-size: 15px !important; font-weight: 400 !important; line-height: 1.6; max-width: 460px; margin: 0 auto;
+  color: var(--ink-2) !important; opacity: 1 !important; font-size: 15px !important; font-weight: 400 !important; line-height: 1.6; max-width: 460px; margin: 0 auto;
 }
-html.mw-theme .m-login .m-login__msg a {
-  color: #fff !important; font-size: inherit !important; font-weight: 500 !important; padding-left: 4px !important;
-  text-decoration: underline !important; text-underline-offset: 3px; text-decoration-color: rgba(255,255,255,.4) !important;
+html.mw-theme .m-login.m-login--1 .m-login__content .m-login__msg a {
+  color: var(--navy) !important; font-size: inherit !important; font-weight: 600 !important; padding-left: 4px !important;
+  text-decoration: underline !important; text-underline-offset: 3px; text-decoration-color: var(--rule-2) !important;
 }
-html.mw-theme .m-login .m-login__msg a:hover { text-decoration-color: #fff !important; }
+html.mw-theme .m-login.m-login--1 .m-login__content .m-login__msg a:hover { text-decoration-color: var(--navy) !important; }
 
 /* ---------- Light/dark switch (added by login.js), top right of the form side ---------- */
 html.mw-theme .m-login .mw-mode-btn.mw-login-mode { position: absolute; top: 20px; right: 24px; margin: 0 !important; background: var(--paper); z-index: 5; }
