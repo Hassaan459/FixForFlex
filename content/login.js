@@ -58,6 +58,8 @@
     const save = () => {
       const roll = (user.value || "").trim();
       const pw = pass ? pass.value : "";
+      // background.js won't sign in out of sight for a while after you sign in yourself.
+      try { chrome.storage.local.set({ mwSignedInAt: Date.now() }); } catch (_) {}
       if (remember.checked && roll) {
         store.set(roll);
         // Remember me also keeps you signed in: background.js keeps the session going and signs in
