@@ -4,4 +4,3 @@
 .ff-fee-bar input { width: 110px; height: 30px; padding: 0 8px; border: 1px solid var(--rule-2, #c9ced6); border-radius: 0; background: var(--paper, #fff); color: var(--ink, #141a24); font: inherit; font-variant-numeric: tabular-nums; }
 .ff-fee-bar input:focus { outline: none; border-color: var(--accent, #00ADEF); }
 .ff-fee-rs { color: var(--ink-3, #626b79); margin-left: 4px; }
-.ff-fee-hint { color: var(--ink-3, #626b79); font-size: 12px; }

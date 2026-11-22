@@ -83,7 +83,7 @@
         const n = fill(opt);
         bar.querySelectorAll(".ff-fill-btn").forEach((x) => x.classList.toggle("is-on", x === b));
         note.textContent = n
-          ? `${n} questions set to ${opt}. Change any you feel differently about, then submit.`
+          ? `${n} questions set to ${opt}.`
           : `No question on this form has "${opt}" as an answer.`;
       });
       bar.appendChild(b);
