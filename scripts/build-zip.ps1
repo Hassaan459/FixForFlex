@@ -8,11 +8,11 @@ $zip = Join-Path $root "dist\FixForFlex-$version.zip"
 
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Path $stage | Out-Null
-foreach ($item in "manifest.json", "background.js", "content", "fonts", "icons", "ui", "README.md") {
+foreach ($item in "manifest.json", "background.js", "content", "offscreen", "fonts", "icons", "ui", "README.md") {
   Copy-Item (Join-Path $root $item) -Destination $stage -Recurse
 }
 # Never ship saved FLEX pages or an old config.js
-Get-ChildItem $stage -Recurse -Include *.html -File | Where-Object { $_.DirectoryName -notlike "*\ui" } | Remove-Item -Force
+Get-ChildItem $stage -Recurse -Include *.html -File | Where-Object { $_.DirectoryName -notlike "*\ui" -and $_.DirectoryName -notlike "*\offscreen" } | Remove-Item -Force
 Get-ChildItem $stage -Recurse -Directory -Filter "*_files" | Remove-Item -Recurse -Force
 
 if (Test-Path $zip) { Remove-Item $zip -Force }
