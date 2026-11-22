@@ -2,9 +2,9 @@
 // 1. Makes "Remember me" work: FLEX's own version looks for an #username field that doesn't exist,
 //    so it never saved anything. Here, ticking it saves your roll number in the extension's storage
 //    and fills it in (with the box ticked) next time. Unticking it forgets the roll number.
-//    Ticking it also keeps you signed in: background.js stops FLEX's session from timing out
-//    until you press Logout.
-//    Your password is never stored here; Chrome's own password manager can offer to save it.
+//    Ticking it also keeps you signed in: the password typed with it is kept in the extension's
+//    storage too, and background.js keeps FLEX's session from timing out and signs in again with it
+//    when the session ends. Unticking Remember me or pressing Logout forgets the password.
 // 2. Adds the light/dark switch, since the sign-in page has no top bar for theme.js to put it in.
 // Nothing here renames, moves or replaces the fields, the Sign In button or the Cloudflare box,
 // so background.js auto-login keeps working.
@@ -13,7 +13,9 @@
   // sign-in with Remember me ticked, so FixForFlex never signs you back in after you signed out.
   document.addEventListener("click", (e) => {
     const a = e.target && e.target.closest && e.target.closest('a[href*="/Login/logout" i]');
-    if (a) { try { chrome.storage.local.set({ mwKeepSignedIn: false }); } catch (_) {} }
+    if (a) {
+      try { chrome.storage.local.set({ mwKeepSignedIn: false }); chrome.storage.local.remove("mwRememberPass"); } catch (_) {}
+    }
   }, true);
 
   const form = document.getElementById("frmlogin");
@@ -24,6 +26,7 @@
   const remember = form.querySelector("#remember");
   const signIn = document.getElementById("m_login_signin_submit");
   const KEY = "mwRememberRoll";
+  const PASS_KEY = "mwRememberPass"; // kept only while Remember me is ticked, to sign in again
 
   // Lets Chrome's password manager recognise the form.
   if (user) user.setAttribute("autocomplete", "username");
@@ -32,7 +35,7 @@
   const store = {
     get: (cb) => { try { chrome.storage.local.get(KEY, (st) => cb(st && st[KEY])); } catch (_) { cb(null); } },
     set: (v) => { try { chrome.storage.local.set({ [KEY]: v }); } catch (_) {} },
-    clear: () => { try { chrome.storage.local.remove(KEY); } catch (_) {} },
+    clear: () => { try { chrome.storage.local.remove([KEY, PASS_KEY]); } catch (_) {} },
   };
 
   const fill = (roll) => {
@@ -54,10 +57,16 @@
 
     const save = () => {
       const roll = (user.value || "").trim();
-      if (remember.checked && roll) store.set(roll);
-      else if (!remember.checked) store.clear();
-      // Remember me also keeps you signed in: background.js keeps the FLEX session from timing out.
-      try { chrome.storage.local.set({ mwKeepSignedIn: remember.checked }); } catch (_) {}
+      const pw = pass ? pass.value : "";
+      if (remember.checked && roll) {
+        store.set(roll);
+        // Remember me also keeps you signed in: background.js keeps the session going and signs in
+        // again with these when it ends. Only this extension can read them.
+        try { chrome.storage.local.set(pw ? { mwKeepSignedIn: true, [PASS_KEY]: pw } : { mwKeepSignedIn: true }); } catch (_) {}
+      } else if (!remember.checked) {
+        store.clear();
+        try { chrome.storage.local.set({ mwKeepSignedIn: false }); } catch (_) {}
+      }
     };
     remember.addEventListener("change", () => { if (!remember.checked) store.clear(); });
     // Capture phase, so this runs before FLEX's own click handler. Pressing Enter also "clicks" Sign In.
