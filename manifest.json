@@ -38,7 +38,8 @@
   "web_accessible_resources": [
     {
       "resources": [
-        "fonts/*.woff2"
+        "fonts/*.woff2",
+        "icons/flex-mark.svg"
       ],
       "matches": [
         "https://flexstudent.nu.edu.pk/*"

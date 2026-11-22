@@ -98,7 +98,8 @@ html.mw-theme .m-aside-left { border-right: 1px solid var(--rule) !important; bo
 /* The logo corner is part of the header bar: same paper, and the header's double rule runs under it */
 html.mw-theme .m-brand, html.mw-theme .m-brand.m-brand--skin-dark { background: transparent !important; padding: 0 !important; }
 html.mw-theme .m-brand .m-brand__logo-wrapper { display: inline-flex !important; align-items: center; gap: 10px; text-decoration: none !important; }
-html.mw-theme .m-brand .m-brand__logo img { width: 26px; height: 26px; }
+/* FLEX's header logo is its 16px tab icon stretched, so it blurs: icons/flex-mark.svg is the same mark as a vector */
+html.mw-theme .m-brand .m-brand__logo img { width: 26px; height: 26px; content: url("chrome-extension://__MSG_@@extension_id__/icons/flex-mark.svg"); }
 html.mw-theme .mw-brand-name { font: 700 17px/1 var(--serif); letter-spacing: .04em; color: var(--ink); }
 html.mw-theme.mw-side-collapsed .mw-brand-name { display: none; }
 @media (min-width: 993px) {
@@ -240,7 +241,9 @@ html.mw-theme.mw-dark .m-nav .m-nav__link-text, html.mw-theme.mw-dark .m-nav .m-
 html.mw-theme.mw-dark .m-content label, html.mw-theme.mw-dark .m-content p, html.mw-theme.mw-dark .m-content td, html.mw-theme.mw-dark .m-content th,
 html.mw-theme.mw-dark .m-content h1, html.mw-theme.mw-dark .m-content h2, html.mw-theme.mw-dark .m-content h3,
 html.mw-theme.mw-dark .m-content h4, html.mw-theme.mw-dark .m-content h5 { color: inherit; }
-html.mw-theme .m-footer { background: var(--desk) !important; }
+/* No glow above the footer: FLEX gives it a soft white shadow */
+html.mw-theme .m-footer { background: var(--desk) !important; box-shadow: none !important; }
+html.mw-theme .m-footer * { box-shadow: none !important; }
 html.mw-theme .m-footer, html.mw-theme .m-footer * { color: var(--ink-3) !important; }
 
 /* ---- Tables v5: compact, scannable ---- */
