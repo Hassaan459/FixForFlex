@@ -1,4 +1,4 @@
-// FixForFlex toolbar popup: marks alerts (with the FLEX sign-in they use), Check now, feedback quick fill, dark mode, update notice.
+// FixForFlex toolbar popup: notifications (with the FLEX sign-in they use), Check now, feedback quick fill, dark mode, update notice.
 const $ = (id) => document.getElementById(id);
 $("version").textContent = "v" + chrome.runtime.getManifest().version;
 
@@ -15,12 +15,13 @@ function render(st) {
   $("login").hidden = !st.watchEnabled;
   const last = st.lastCheck;
   let text;
-  if (last && last.status === "signed-out") text = "Signed out of FLEX. Sign in, or save your sign-in below.";
-  else if (last && last.status === "login-failed") text = "Couldn't sign in. Check your roll number and password below.";
-  else if (last && last.status === "error") text = `Last check failed ${ago(last.at)}.`;
-  else if (last) text = `Last checked ${ago(last.at)}.`;
-  else text = "Not checked yet.";
-  if (!st.watchEnabled) text = "Off. " + (last ? text : "Turn on to get alerts when marks change.");
+  if (!st.flexRoll) text = "On. Waiting for your FLEX sign-in.";
+  else if (last && last.status === "signed-out") text = "Signed out of FLEX. Save your sign-in below.";
+  else if (last && last.status === "login-failed") text = "Couldn't sign in. Fix your roll number and password below.";
+  else if (last && last.status === "error") text = `On. Couldn't reach FLEX ${ago(last.at)}.`;
+  else if (last) text = `On. Marks up to date as of ${ago(last.at)}.`;
+  else text = "On. You'll be notified when your marks change.";
+  if (!st.watchEnabled) text = "Off. Turn on and save your FLEX sign-in to get notifications. Without it, FixForFlex sends none.";
   $("status").textContent = text;
 
   const up = st.update;
@@ -45,7 +46,7 @@ $("check").addEventListener("click", () => {
   });
 });
 
-// ---- FLEX sign-in, shown only while alerts are on ----
+// ---- FLEX sign-in, shown only while notifications are on ----
 chrome.storage.local.get(["flexRoll", "flexPass", "watchEvery"], (st) => {
   showSaved(st.flexRoll && st.flexPass ? st.flexRoll : "");
   $("watchEvery").value = String(st.watchEvery || 30);
@@ -53,7 +54,7 @@ chrome.storage.local.get(["flexRoll", "flexPass", "watchEvery"], (st) => {
   syncOwner();
 });
 
-// Only the developer's own copy (by roll number, hashed) can change the interval; everyone else checks every 30 minutes.
+// Only the developer's own copy (by roll number, hashed) can change the interval; everyone else updates every 30 minutes.
 const OWNER_HASH = "c2f8eeb78c0a0b1a25d9640795f5782d2986cc132eef84574d90688173739706";
 async function isOwner(roll) {
   const norm = String(roll || "").toLowerCase().replace(/[^a-z0-9]/g, "");
