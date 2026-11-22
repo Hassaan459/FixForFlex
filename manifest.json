@@ -265,8 +265,7 @@
     },
     {
       "matches": [
-        "https://flexstudent.nu.edu.pk/Login*",
-        "https://flexstudent.nu.edu.pk/login*"
+        "https://flexstudent.nu.edu.pk/*"
       ],
       "js": [
         "content/autologin.js"
