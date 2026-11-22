@@ -583,7 +583,7 @@ async function setupAlarms() {
   const every = (await isOwner(cfg.flexRoll)) ? Math.max(1, Number(cfg.watchEvery) || STANDARD_EVERY) : STANDARD_EVERY;
   if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: every });
   if (!(await chrome.alarms.get("keep-alive"))) chrome.alarms.create("keep-alive", { delayInMinutes: 1, periodInMinutes: KEEPALIVE_MINUTES });
-  // Wakes once a day; checkForUpdate itself only goes to GitHub once a week. Copies before 1.0.1
+  // Wakes once a day; checkForUpdate itself only goes to GitHub once a week. Older copies
   // made this alarm with a different period, so it is made again if it doesn't match.
   const up = await chrome.alarms.get("check-update");
   if (!up || up.periodInMinutes !== UPDATE_ALARM_MINUTES) {
