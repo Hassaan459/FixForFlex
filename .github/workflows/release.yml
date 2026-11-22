@@ -28,4 +28,10 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "v$VERSION" dist/FixForFlex.zip --target "$GITHUB_SHA" --title "FixForFlex $VERSION" --notes-file .github/release-notes.md --latest
+        run: |
+          # Run again with the same version (pre-release testing) and it replaces that release:
+          # the tag moves to this commit and the zip is rebuilt, so the download link stays the same.
+          if gh release view "v$VERSION" >/dev/null 2>&1; then
+            gh release delete "v$VERSION" --cleanup-tag --yes
+          fi
+          gh release create "v$VERSION" dist/FixForFlex.zip --target "$GITHUB_SHA" --title "FixForFlex $VERSION" --notes-file .github/release-notes.md --latest
