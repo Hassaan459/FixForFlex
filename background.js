@@ -332,6 +332,11 @@ async function check(manual = false) {
     let { ok, rows, semId } = await fetchRows();
 
     if (!ok) {
+      // No sign-in saved in the popup: use the one kept by Remember me on FLEX's sign-in page.
+      if (!cfg.flexRoll || !cfg.flexPass) {
+        const kept = await rememberedSignIn();
+        if (kept) { cfg.flexRoll = kept.roll; cfg.flexPass = kept.pass; }
+      }
       if (!cfg.flexRoll || !cfg.flexPass) {
         await setStatus("signed-out");
         if (manual) notify("FixForFlex", "Sign in to FLEX, or save your sign-in in the FixForFlex popup, then try again.");
@@ -391,35 +396,59 @@ async function check(manual = false) {
 // ---- Remember me: staying signed in ----
 // FLEX's own "Remember me" only pre-fills the roll number; the sign-in itself is a server session
 // that FLEX ends after a stretch with no page loads (it was gone ~30 minutes after signing in).
-// So while Remember me is on (ticked at the last sign-in, see content/login.js), FixForFlex loads a
-// FLEX page every KEEPALIVE_MINUTES, which counts as activity and keeps that session going.
-// If the session has ended anyway (Chrome was closed, the PC slept, FLEX restarted) and the sign-in
-// is saved in the popup, it signs in again out of sight, the same way the marks checks do.
+// When you sign in on FLEX with Remember me ticked, content/login.js keeps that roll number and
+// password (mwRememberRoll, mwRememberPass), separate from the popup's notification sign-in.
+// While they are kept, FixForFlex:
+//  - loads a FLEX page every KEEPALIVE_MINUTES, which counts as activity and keeps the session going;
+//  - signs in again out of sight if the session has ended anyway (Chrome closed, PC asleep);
+//  - signs you in on FLEX's sign-in page itself if you land there (content/autologin.js).
+// Unticking Remember me or pressing Logout on FLEX forgets the password and stops all of this.
 const KEEPALIVE_MINUTES = 5;
 
-async function keepSignedIn() {
-  const { mwKeepSignedIn, mwRememberRoll } = await chrome.storage.local.get(["mwKeepSignedIn", "mwRememberRoll"]);
-  // Copies from before this setting existed: a remembered roll number means Remember me was ticked.
-  return mwKeepSignedIn === undefined ? !!mwRememberRoll : !!mwKeepSignedIn;
+async function rememberState() {
+  const st = await chrome.storage.local.get(["mwKeepSignedIn", "mwRememberRoll", "mwRememberPass"]);
+  // Copies from before mwKeepSignedIn existed: a remembered roll number means Remember me was ticked.
+  const on = st.mwKeepSignedIn === undefined ? !!st.mwRememberRoll : !!st.mwKeepSignedIn;
+  const creds = on && st.mwRememberRoll && st.mwRememberPass ? { roll: st.mwRememberRoll, pass: st.mwRememberPass } : null;
+  return { on, creds };
 }
+const rememberedSignIn = async () => (await rememberState()).creds;
 
 async function keepAlive() {
-  if (busy || !(await keepSignedIn())) return;
+  const { on, creds } = await rememberState();
+  if (busy || !on) return;
   busy = true;
   try {
     if (await signedIn()) return; // that page load was the keep-alive
-    const cfg = await settings();
-    if (!cfg.flexRoll || !cfg.flexPass) return; // nothing saved to sign in with
-    const { loginBlocked } = await chrome.storage.local.get("loginBlocked");
-    if (loginBlocked) return; // the saved sign-in failed before: wait for the user to fix it
-    const login = await autoLogin(cfg.flexRoll, cfg.flexPass, false);
-    if (login === "ok") await chrome.storage.local.set({ loginBlocked: false });
-    else if (login !== "check-not-passed") await chrome.storage.local.set({ loginBlocked: true });
+    if (!creds) return; // signed in before the password was kept: nothing to sign in again with
+    const { rememberBlocked } = await chrome.storage.local.get("rememberBlocked");
+    if (rememberBlocked) return; // that password failed before: wait for the next sign-in on FLEX
+    const login = await autoLogin(creds.roll, creds.pass, false);
+    if (login === "ok") await chrome.storage.local.set({ rememberBlocked: false });
+    else if (login !== "check-not-passed") await chrome.storage.local.set({ rememberBlocked: true });
   } catch (_) {
   } finally {
     busy = false;
   }
 }
+
+// FLEX's sign-in page opened in a tab (not by us): content/autologin.js asks for the remembered
+// sign-in. One try per tab every 2 minutes, so a changed password can't cause a sign-in loop.
+const pageTries = new Map(); // tabId -> time of last try
+chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  if (!msg || msg.type !== "remember-signin") return;
+  if (pending || sender.origin !== "https://flexstudent.nu.edu.pk" || !sender.tab || sender.frameId !== 0) return reply(null);
+  const last = pageTries.get(sender.tab.id) || 0;
+  if (Date.now() - last < 120e3) return reply(null);
+  rememberedSignIn().then(async (creds) => {
+    const { rememberBlocked } = await chrome.storage.local.get("rememberBlocked");
+    if (!creds || rememberBlocked) return reply(null);
+    pageTries.set(sender.tab.id, Date.now());
+    reply(creds);
+  });
+  return true;
+});
+chrome.tabs.onRemoved.addListener((id) => pageTries.delete(id));
 
 // ---- Update notice ----
 // Unpacked installs never update themselves, so once a day look at the latest GitHub release
@@ -472,7 +501,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   await setupAlarms();
   checkForUpdate();
 });
-chrome.runtime.onStartup.addListener(setupAlarms);
+chrome.runtime.onStartup.addListener(() => { setupAlarms(); setTimeout(keepAlive, 15e3); });
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === "check-marks") check();
   if (a.name === "check-update") checkForUpdate();
@@ -486,8 +515,8 @@ chrome.storage.onChanged.addListener((ch, area) => {
     if (ch.watchEnabled && ch.watchEnabled.newValue === true && !ch.watchEnabled.oldValue) check(true);
   }
   if (ch.flexRoll || ch.flexPass) chrome.storage.local.set({ loginBlocked: false });
-  // Just signed in with Remember me ticked: start keeping that session going right away.
-  if (ch.mwKeepSignedIn && ch.mwKeepSignedIn.newValue === true) setTimeout(keepAlive, 60e3);
+  // A new password from the FLEX sign-in page: try it again even if the old one failed.
+  if (ch.mwRememberPass && ch.mwRememberPass.newValue) chrome.storage.local.set({ rememberBlocked: false });
 });
 // From the popup.
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
