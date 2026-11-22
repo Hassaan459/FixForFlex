@@ -6,6 +6,13 @@ html.mw-theme.mw-dark { --warn: #e0b154; }
 
 /* Tabs: no focus box after clicking; the underline already marks the open course */
 html.mw-theme .m-tabs-line .m-tabs__link:focus, html.mw-theme .m-tabs-line .m-tabs__link:focus-visible { outline: none !important; box-shadow: none !important; }
+/* Course tabs look the same as on the Marks page: the page's own font, the open course bold and in the accent colour */
+html.mw-theme body .m-tabs-line .m-tabs__link, html.mw-theme body .nav-tabs .nav-link {
+  font-family: var(--sans) !important; font-size: 14.5px !important; font-weight: 600 !important; letter-spacing: .01em !important; padding: 10px 10px 14px !important;
+}
+html.mw-theme body .m-tabs-line .m-tabs__link.active, html.mw-theme body .nav-tabs .nav-link.active {
+  font-weight: 800 !important; color: var(--accent) !important; border-bottom-color: var(--accent) !important;
+}
 
 /* Course header row */
 html.mw-theme .tab-pane > .row:first-child { align-items: flex-start; margin-bottom: 18px; }
