@@ -344,6 +344,7 @@ async function check(manual = false) {
       }
       const { loginBlocked } = await chrome.storage.local.get("loginBlocked");
       if (loginBlocked && !manual) { await setStatus("login-failed"); return; }
+      if (!manual && (await userOnFlex())) { await setStatus("signed-out"); return; } // try again next time
 
       const login = await autoLogin(cfg.flexRoll, cfg.flexPass, manual);
       if (login !== "ok") {
@@ -414,6 +415,19 @@ async function rememberState() {
 }
 const rememberedSignIn = async () => (await rememberState()).creds;
 
+// Never sign in out of sight while you are using FLEX yourself: if FLEX allows one session per
+// account, a second sign-in would end the one in your tab. So no background sign-in while a FLEX
+// tab is open, or within SIGNIN_QUIET_MINUTES of you signing in on FLEX's page (content/login.js).
+const SIGNIN_QUIET_MINUTES = 15;
+async function userOnFlex() {
+  try {
+    const tabs = await chrome.tabs.query({ url: "https://flexstudent.nu.edu.pk/*" });
+    if (tabs.length) return true;
+  } catch (_) {}
+  const { mwSignedInAt } = await chrome.storage.local.get("mwSignedInAt");
+  return !!mwSignedInAt && Date.now() - mwSignedInAt < SIGNIN_QUIET_MINUTES * 60e3;
+}
+
 async function keepAlive() {
   const { on, creds } = await rememberState();
   if (busy || !on) return;
@@ -421,6 +435,7 @@ async function keepAlive() {
   try {
     if (await signedIn()) return; // that page load was the keep-alive
     if (!creds) return; // signed in before the password was kept: nothing to sign in again with
+    if (await userOnFlex()) return; // FLEX's own page will sign you in (content/autologin.js)
     const { rememberBlocked } = await chrome.storage.local.get("rememberBlocked");
     if (rememberBlocked) return; // that password failed before: wait for the next sign-in on FLEX
     const login = await autoLogin(creds.roll, creds.pass, false);
@@ -433,9 +448,14 @@ async function keepAlive() {
 }
 
 // FLEX's sign-in page opened in a tab (not by us): content/autologin.js asks for the remembered
-// sign-in. One try per tab every 2 minutes, so a changed password can't cause a sign-in loop.
+// sign-in. One try per tab every 2 minutes, so a changed password can't cause a sign-in loop;
+// once that tab reaches a signed-in FLEX page (content/login.js says so), it may try again.
 const pageTries = new Map(); // tabId -> time of last try
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  if (msg && msg.type === "flex-signed-in") {
+    if (sender.tab) pageTries.delete(sender.tab.id);
+    return;
+  }
   if (!msg || msg.type !== "remember-signin") return;
   if (pending || sender.origin !== "https://flexstudent.nu.edu.pk" || !sender.tab || sender.frameId !== 0) return reply(null);
   const last = pageTries.get(sender.tab.id) || 0;
