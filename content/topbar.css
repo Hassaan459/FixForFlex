@@ -1,13 +1,10 @@
-/* FixForFlex: top bar. Profile dropdown (My Profile, Change Password, Logout) and the page title.
+/* FixForFlex: top bar. Profile dropdown (My Profile, Change Password, Logout); no page title.
    Loaded on every FLEX page after theme.css; uses its tokens (--paper, --ink, --rule...). */
 html.mw-theme { --tb-accent: var(--accent); --tb-shadow: 0 2px 4px rgba(15,25,45,.10), 0 14px 32px -10px rgba(15,25,45,.32); }
 html.mw-theme.mw-dark { --tb-accent: var(--accent); --tb-shadow: 0 2px 4px rgba(0,0,0,.45), 0 16px 36px -10px rgba(0,0,0,.75); }
 
-/* Page title in the middle of the bar: full ink, whatever FLEX's inline white or fades say */
-html.mw-theme .m-header .m-header-head .m-subheader__title {
-  color: var(--ink) !important; -webkit-text-fill-color: var(--ink) !important; opacity: 1 !important; filter: none !important;
-  font-weight: 700 !important; font-size: 19px !important; letter-spacing: -.01em !important; text-shadow: none !important;
-}
+/* No page title in the bar: every page already has its own heading just below */
+html.mw-theme .m-header .m-subheader__title { visibility: hidden !important; }
 
 /* ---------- Profile dropdown ---------- */
 html.mw-theme .m-topbar__user-profile .m-dropdown__arrow { display: none !important; }
