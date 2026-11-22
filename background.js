@@ -427,8 +427,9 @@ const KEEPALIVE_MINUTES = 5;
 
 async function rememberState() {
   const st = await chrome.storage.local.get(["mwKeepSignedIn", "mwRememberRoll", "mwRememberPass"]);
-  // Copies from before mwKeepSignedIn existed: a remembered roll number means Remember me was ticked.
-  const on = st.mwKeepSignedIn === undefined ? !!st.mwRememberRoll : !!st.mwKeepSignedIn;
+  // Only an explicit tick at the last sign-in counts (set by content/login.js), never an old
+  // remembered roll number on its own, so Remember me off really means off.
+  const on = st.mwKeepSignedIn === true;
   const creds = on && st.mwRememberRoll && st.mwRememberPass ? { roll: st.mwRememberRoll, pass: st.mwRememberPass } : null;
   return { on, creds };
 }
@@ -483,10 +484,14 @@ chrome.runtime.onMessage.addListener((msg, sender, reply) => {
   if (msg && msg.type === "remember-check") {
     if (pending || !ours) return reply(null);
     (async () => {
-      const { on } = await rememberState();
+      const { on, creds } = await rememberState();
       if (!on) return reply({ on: false });
       const url = await homeUrl();
-      reply({ on: true, signedIn: await signedIn(), url });
+      if (await signedIn()) return reply({ on: true, signedIn: true, url });
+      // Will content/autologin.js sign in on this page? Same rules as "remember-signin" below.
+      const { rememberBlocked } = await chrome.storage.local.get("rememberBlocked");
+      const tried = Date.now() - (pageTries.get(sender.tab.id) || 0) < 120e3;
+      reply({ on: true, signedIn: false, willSignIn: !!creds && !rememberBlocked && !tried, url });
     })().catch(() => reply(null));
     return true;
   }

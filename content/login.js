@@ -82,7 +82,11 @@
         try { chrome.storage.local.set({ mwKeepSignedIn: false }); } catch (_) {}
       }
     };
-    remember.addEventListener("change", () => { if (!remember.checked) store.clear(); });
+    remember.addEventListener("change", () => {
+      if (remember.checked) return;
+      store.clear();
+      try { chrome.storage.local.set({ mwKeepSignedIn: false }); } catch (_) {}
+    });
     // Capture phase, so this runs before FLEX's own click handler. Pressing Enter also "clicks" Sign In.
     if (signIn) signIn.addEventListener("click", save, true);
     form.addEventListener("submit", save, true);

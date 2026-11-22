@@ -14,3 +14,5 @@ html.mw-dark .mw-signing { background: var(--desk, #0d0d0d); color: var(--ink, #
   animation: mw-signing-spin .8s linear infinite;
 }
 @keyframes mw-signing-spin { to { transform: rotate(360deg); } }
+/* Before background.js has answered: just the page colour, no text, so nothing flashes either way. */
+.mw-signing--quiet .mw-signing-box { visibility: hidden; }
