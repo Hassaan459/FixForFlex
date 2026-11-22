@@ -1,6 +1,7 @@
 body { width: 300px; background: var(--paper); }
 header { display: flex; align-items: center; gap: 8px; padding: 12px 14px; border-bottom: 1px solid var(--rule); }
 header strong { font-size: 15px; letter-spacing: .02em; flex: 1; }
+header .switch { margin-left: 4px; }
 section { padding: 12px 14px; border-bottom: 1px solid var(--rule); }
 .line { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 section > .line { margin-bottom: 10px; }
