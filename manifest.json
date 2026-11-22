@@ -15,7 +15,8 @@
     "notifications",
     "storage",
     "tabs",
-    "scripting"
+    "offscreen",
+    "declarativeNetRequestWithHostAccess"
   ],
   "host_permissions": [
     "https://flexstudent.nu.edu.pk/*"
@@ -260,6 +261,17 @@
       "css": [
         "content/requests.css"
       ],
+      "run_at": "document_end"
+    },
+    {
+      "matches": [
+        "https://flexstudent.nu.edu.pk/Login*",
+        "https://flexstudent.nu.edu.pk/login*"
+      ],
+      "js": [
+        "content/autologin.js"
+      ],
+      "all_frames": true,
       "run_at": "document_end"
     }
   ],
