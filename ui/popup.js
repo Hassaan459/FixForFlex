@@ -10,6 +10,16 @@ function ago(t) {
   return h < 24 ? `${h} h ago` : `${Math.round(h / 24)} d ago`;
 }
 
+function newer(a, b) { // same as background.js: true if version a > version b
+  const pa = String(a).replace(/^v/i, "").split(".").map(Number);
+  const pb = String(b).replace(/^v/i, "").split(".").map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
+    const x = pa[i] || 0, y = pb[i] || 0;
+    if (x !== y) return x > y;
+  }
+  return false;
+}
+
 function render(st) {
   $("watch").checked = !!st.watchEnabled;
   $("login").hidden = !st.watchEnabled;
@@ -22,9 +32,10 @@ function render(st) {
   $("status").textContent = text;
   $("status").hidden = !text;
 
-  const up = st.update;
+  // Hidden once this copy is that version or newer (the stored notice can be from before updating).
+  const up = st.update && newer(st.update.version, chrome.runtime.getManifest().version) ? st.update : null;
   $("update").hidden = !up;
-  if (up) { $("update").textContent = `Version ${up.version} is out. Download it`; $("update").href = up.url; }
+  if (up) { $("update").textContent = `New version available (${up.version}). Download it`; $("update").href = up.url; }
 }
 
 // ---- FixForFlex on/off: off hides everything but the header ----

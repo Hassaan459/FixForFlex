@@ -519,9 +519,12 @@ async function homeUrl() {
 chrome.tabs.onRemoved.addListener((id) => pageTries.delete(id));
 
 // ---- Update notice ----
-// Unpacked installs never update themselves, so once a day look at the latest GitHub release
-// and remember it; the popup shows a download link when it is newer than this copy.
+// Unpacked installs never update themselves, so once a week look at the latest GitHub release
+// and remember it. When it is newer than this copy, the toolbar icon gets a "NEW" badge and the
+// popup shows a download link. The request is a plain anonymous GET to GitHub's public API:
+// nothing about the user or this copy is sent.
 const RELEASES_API = "https://api.github.com/repos/Hassaan459/FixForFlex/releases/latest";
+const UPDATE_EVERY_DAYS = 7;
 
 function newer(a, b) { // true if version a > version b ("1.10" > "1.9", "1.1" > "1.0")
   const pa = String(a).replace(/^v/i, "").split(".").map(Number);
@@ -533,22 +536,42 @@ function newer(a, b) { // true if version a > version b ("1.10" > "1.9", "1.1" >
   return false;
 }
 
-async function checkForUpdate() {
+// The badge on the toolbar icon. Chrome forgets it on restart, so it is set again from storage.
+async function syncBadge() {
+  try {
+    const { update } = await chrome.storage.local.get("update");
+    const show = !!update && newer(update.version, chrome.runtime.getManifest().version) && (await isEnabled());
+    await chrome.action.setBadgeText({ text: show ? "NEW" : "" });
+    if (show) await chrome.action.setBadgeBackgroundColor({ color: "#00ADEF" });
+    await chrome.action.setTitle({ title: show ? `FixForFlex: version ${update.version} is out` : "FixForFlex" });
+  } catch (_) {}
+}
+
+// Looks at GitHub at most once every UPDATE_EVERY_DAYS (force: right after install or update).
+async function checkForUpdate(force = false) {
   try {
     if (!(await isEnabled())) return;
-    const res = await fetch(RELEASES_API, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
-    if (!res.ok) return; // offline, rate-limited, or the repo is private: say nothing
+    const { updateCheckedAt } = await chrome.storage.local.get("updateCheckedAt");
+    if (!force && updateCheckedAt && Date.now() - updateCheckedAt < UPDATE_EVERY_DAYS * 864e5) return;
+    const res = await fetch(RELEASES_API, {
+      headers: { Accept: "application/vnd.github+json" },
+      cache: "no-store",
+      credentials: "omit",
+    });
+    if (!res.ok) return; // offline, rate-limited, or the repo is private: say nothing, try again tomorrow
     const rel = await res.json();
     const version = String(rel.tag_name || "").replace(/^v/i, "");
     const current = chrome.runtime.getManifest().version;
     const zip = (rel.assets || []).find((a) => /\.zip$/i.test(a.name));
     await chrome.storage.local.set({
+      updateCheckedAt: Date.now(),
       update: newer(version, current) ? { version, url: zip ? zip.browser_download_url : rel.html_url, page: rel.html_url } : null,
     });
   } catch (_) {}
 }
 
 // ---- Alarms ----
+const UPDATE_ALARM_MINUTES = 24 * 60;
 async function setupAlarms() {
   const cfg = await settings();
   await chrome.alarms.clear("check-marks");
@@ -560,7 +583,12 @@ async function setupAlarms() {
   const every = (await isOwner(cfg.flexRoll)) ? Math.max(1, Number(cfg.watchEvery) || STANDARD_EVERY) : STANDARD_EVERY;
   if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: every });
   if (!(await chrome.alarms.get("keep-alive"))) chrome.alarms.create("keep-alive", { delayInMinutes: 1, periodInMinutes: KEEPALIVE_MINUTES });
-  if (!(await chrome.alarms.get("check-update"))) chrome.alarms.create("check-update", { delayInMinutes: 1, periodInMinutes: 24 * 60 });
+  // Wakes once a day; checkForUpdate itself only goes to GitHub once a week. Older copies
+  // made this alarm with a different period, so it is made again if it doesn't match.
+  const up = await chrome.alarms.get("check-update");
+  if (!up || up.periodInMinutes !== UPDATE_ALARM_MINUTES) {
+    chrome.alarms.create("check-update", { delayInMinutes: 1, periodInMinutes: UPDATE_ALARM_MINUTES });
+  }
 }
 
 chrome.runtime.onInstalled.addListener(async ({ reason }) => {
@@ -574,9 +602,10 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
   }
   await syncContentScripts();
   await setupAlarms();
-  checkForUpdate();
+  await checkForUpdate(true); // also clears the notice once this copy is the newest
+  syncBadge();
 });
-chrome.runtime.onStartup.addListener(() => { setupAlarms(); setTimeout(keepAlive, 15e3); });
+chrome.runtime.onStartup.addListener(() => { setupAlarms(); syncBadge(); setTimeout(keepAlive, 15e3); });
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === "check-marks") check();
   if (a.name === "check-update") checkForUpdate();
@@ -591,10 +620,12 @@ chrome.storage.onChanged.addListener((ch, area) => {
       await setupAlarms();
       if (!(await isEnabled())) { pending = null; await closeOffscreen(); }
       else checkForUpdate();
+      syncBadge();
       await reloadFlexTabs();
     })();
     return;
   }
+  if (ch.update) syncBadge();
   if (ch.watchEnabled || ch.watchEvery || ch.flexRoll) {
     setupAlarms();
     if (ch.watchEnabled && ch.watchEnabled.newValue === true && !ch.watchEnabled.oldValue) check(true);

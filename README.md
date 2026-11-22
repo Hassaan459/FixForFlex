@@ -22,7 +22,7 @@ Open FLEX and the new look is there. Notifications are off until you turn them o
 
 ## Update
 
-The popup tells you when a new version is out. Download the new zip, unzip it over the old folder (replace the files), then click the reload icon on FixForFlex in `chrome://extensions`. Your settings are kept.
+FixForFlex looks for a new version once a week (one anonymous request to GitHub, nothing about you is sent). When one is out, its toolbar icon shows a **NEW** badge and the popup has a download link. Download the new zip, unzip it over the old folder (replace the files), then click the reload icon on FixForFlex in `chrome://extensions`. Your settings are kept.
 
 ## Remember me
 

@@ -8,6 +8,6 @@
 
 Open FLEX and the new look is there.
 
-**Update:** the popup tells you when a new version is out. Download the new zip, unzip it over the old folder, then click reload on FixForFlex in `chrome://extensions`. Your settings are kept.
+**Update:** once a week FixForFlex checks GitHub for a new version; when there is one, its icon shows **NEW** and the popup has a download link. Download the new zip, unzip it over the old folder, then click reload on FixForFlex in `chrome://extensions`. Your settings are kept.
 
 Unofficial, not made by FAST.
