@@ -8,11 +8,11 @@
 /* Grand total: a printed statement line between rules, not a row of tiles */
 .mw-stats {
   display: grid; grid-template-columns: 1.5fr 1fr 1fr 1fr; align-items: end;
-  border-top: 1px solid var(--ink-2); border-bottom: 3px double var(--rule-2); padding: 16px 0 18px;
+  border-top: 1px solid var(--ink-2); border-bottom: 1px solid var(--rule-2); padding: 16px 0 18px;
 }
 .mw-stat { padding: 0 22px; border-left: 1px solid var(--rule); }
 .mw-stat:first-child { padding-left: 0; border-left: 0; }
-.mw-k { font-size: 11.5px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase; color: var(--ink-3); margin-bottom: 6px; }
+.mw-k { font-size: 12.5px; font-weight: 600; color: var(--ink-3); margin-bottom: 6px; }
 .mw-v { font-family: var(--serif) !important; font-weight: 800; letter-spacing: -.02em; font-size: 26px; line-height: 1.1; color: var(--ink); font-variant-numeric: tabular-nums lining-nums; }
 .mw-v * { font-family: inherit !important; }
 .mw-stat-main .mw-v { font-size: 44px; letter-spacing: -.01em; }
