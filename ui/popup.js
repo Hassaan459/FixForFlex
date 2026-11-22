@@ -1,4 +1,4 @@
-// FixForFlex toolbar popup: notifications (with the FLEX sign-in they use), Check now, feedback quick fill, dark mode, update notice.
+// FixForFlex toolbar popup: on/off, notifications (with the FLEX sign-in they use), Check now, feedback quick fill, dark mode, update notice.
 const $ = (id) => document.getElementById(id);
 $("version").textContent = "v" + chrome.runtime.getManifest().version;
 
@@ -26,6 +26,15 @@ function render(st) {
   $("update").hidden = !up;
   if (up) { $("update").textContent = `Version ${up.version} is out. Download it`; $("update").href = up.url; }
 }
+
+// ---- FixForFlex on/off: off hides everything but the header ----
+chrome.storage.local.get("enabled", (st) => showEnabled(st.enabled !== false));
+chrome.storage.onChanged.addListener((ch, area) => { if (area === "local" && ch.enabled) showEnabled(ch.enabled.newValue !== false); });
+function showEnabled(on) {
+  $("enabled").checked = on;
+  $("main").hidden = !on;
+}
+$("enabled").addEventListener("change", () => chrome.storage.local.set({ enabled: $("enabled").checked }));
 
 const KEYS = ["watchEnabled", "lastCheck", "update", "flexRoll"];
 chrome.storage.local.get(KEYS, render);
