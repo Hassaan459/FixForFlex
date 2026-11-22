@@ -8,25 +8,30 @@
 // removed so you can see the form. Nothing happens when Remember me is off.
 (() => {
   if (window.top !== window) return;
-  let cover;
-  const uncover = () => { if (cover) { cover.remove(); cover = null; } };
-  try {
-    chrome.runtime.sendMessage({ type: "remember-check" }, (res) => {
-      if (chrome.runtime.lastError || !res || !res.on) return;
-      if (res.signedIn && res.url) { location.replace(res.url); return; }
-      // Not signed in: if this page turns out to have no sign-in form, there's nothing to cover.
-      const check = () => { if (!document.getElementById("frmlogin")) uncover(); };
-      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", check, { once: true });
-      else check();
-      setTimeout(uncover, 25000);
-    });
-  } catch (_) { return; }
-
-  cover = document.createElement("div");
-  cover.className = "mw-signing";
+  // Drawn blank at once so the form doesn't flash up; "Signing you in…" appears only once
+  // background.js says there is something to do. Any other answer (Remember me off, nothing
+  // saved, no answer at all) removes the cover straight away and you get FLEX's normal form.
+  let cover = document.createElement("div");
+  cover.className = "mw-signing mw-signing--quiet";
   cover.setAttribute("role", "status");
   cover.innerHTML = '<div class="mw-signing-box"><span class="mw-signing-spin"></span><span>Signing you in…</span></div>';
   (document.body || document.documentElement).appendChild(cover);
-  // Give up on the cover after a few seconds if background.js never answers.
-  setTimeout(() => { if (cover && document.readyState === "complete" && !document.getElementById("frmlogin")) uncover(); }, 4000);
+  const uncover = () => { if (cover) { cover.remove(); cover = null; } };
+  let answered = false;
+  setTimeout(() => { if (!answered) uncover(); }, 1500);
+
+  try {
+    chrome.runtime.sendMessage({ type: "remember-check" }, (res) => {
+      answered = true;
+      if (chrome.runtime.lastError || !res || !res.on) return uncover();
+      if (res.signedIn && res.url) { location.replace(res.url); return; }
+      if (!res.willSignIn) return uncover(); // nothing saved to sign in with (or it failed before)
+      if (cover) cover.classList.remove("mw-signing--quiet");
+      // If this page turns out to have no sign-in form, there's nothing to cover.
+      const check = () => { if (!document.getElementById("frmlogin")) uncover(); };
+      if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", check, { once: true });
+      else check();
+      setTimeout(uncover, 25000); // e.g. the Cloudflare check wants a click
+    });
+  } catch (_) { uncover(); }
 })();
