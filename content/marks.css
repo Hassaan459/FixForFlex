@@ -88,8 +88,6 @@ html.mw-theme form.mw-sem-form { margin: 0 !important; display: block; }
 html.mw-theme form.mw-sem-form .row { margin: 0 !important; display: block; }
 html.mw-theme form.mw-sem-form .row > div { padding: 0 !important; text-align: left !important; flex: none; max-width: none; width: auto; }
 html.mw-theme body select#SemId { min-width: 150px; height: 34px; font-size: 13.5px !important; }
-/* "Marks" was shown twice: drop the top-bar title on this page, the panel already says it */
-html.mw-theme .m-header .m-subheader__title { visibility: hidden !important; }
 /* Grand total: the score sits in the header while closed; when opened it slides out of the header
    and is shown in the panel with the other figures, so it never appears twice. */
 html.mw-theme .card.mw-grand .card-header .mw-sum { transition: opacity .25s ease, transform .25s ease; }

@@ -47,8 +47,6 @@
 
   function details() {
     root.classList.add("mw-fee", "mw-fee-details");
-    const title = document.querySelector(".m-header .m-subheader__title");
-    if (title && txt(title) === "FeeDetails") title.textContent = "Fee Details";
 
     // FLEX fills the semester rows and the expanded breakdown after the page loads, so watch for them.
     const box = document.getElementById("sample_StdFeeDetail");
