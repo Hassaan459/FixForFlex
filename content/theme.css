@@ -284,3 +284,17 @@ html.mw-theme.mw-dark .m-alert .m-alert__icon i { color: var(--ink-2) !important
 html.mw-theme .m-alert .m-alert__text { color: var(--ink-2) !important; font-weight: 400 !important; padding: 14px 18px !important; width: auto !important; }
 html.mw-theme .m-alert .m-alert__text strong { color: var(--ink) !important; font-weight: 600 !important; }
 html.mw-theme .m-alert .m-alert__close .close, html.mw-theme .m-alert .m-alert__close .close::before { color: var(--ink-3) !important; }
+
+/* Alert close buttons: FLEX draws the × with an icon font that the theme's text font replaced,
+   leaving a faint ≡. Draw a plain × in the text colour instead. */
+html.mw-theme .alert .close, html.mw-theme .m-alert .close, html.mw-theme button.close {
+  opacity: .65 !important; text-shadow: none !important; color: var(--ink-2) !important; background: transparent !important;
+  border: 0 !important; width: 28px; height: 28px; padding: 0 !important; display: inline-flex !important; align-items: center; justify-content: center; cursor: pointer;
+}
+html.mw-theme .alert .close:hover, html.mw-theme .m-alert .close:hover, html.mw-theme button.close:hover { opacity: 1 !important; color: var(--ink) !important; }
+html.mw-theme .alert .close > *, html.mw-theme .m-alert .close > *, html.mw-theme button.close > * { display: none !important; }
+html.mw-theme .alert .close::before, html.mw-theme .m-alert .close::before, html.mw-theme button.close::before {
+  content: "\00d7" !important; font-family: var(--sans) !important; font-size: 24px !important; font-weight: 400 !important;
+  line-height: 1 !important; color: inherit !important; display: block !important;
+}
+html.mw-theme .alert .close::after, html.mw-theme .m-alert .close::after, html.mw-theme button.close::after { content: none !important; }
