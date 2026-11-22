@@ -12,7 +12,7 @@ A Chrome extension that cleans up the FAST-NU FLEX student portal. It's unoffici
 
 ## Install
 
-1. Download the latest `FixForFlex-x.y.zip` from the Releases page and unzip it somewhere you'll keep it (for example `Documents\FixForFlex`).
+1. Download `FixForFlex.zip` from the latest release (https://github.com/Hassaan459/FixForFlex/releases/latest) and unzip it somewhere you'll keep it (for example `Documents\FixForFlex`).
 2. Open `chrome://extensions` (or `edge://extensions` in Edge).
 3. Turn on **Developer mode** (top right).
 4. Click **Load unpacked** and pick the unzipped `FixForFlex` folder.
