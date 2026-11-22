@@ -180,78 +180,145 @@ function diffRows(oldRows, newRows) {
   return { changedCourses: [...changedCourses], details };
 }
 
-// Runs inside the login page: fills the form, waits for the Cloudflare check, clicks Sign In.
-async function fillAndSubmit(roll, pass) {
-  const set = (el, value) => {
-    el.focus();
-    el.value = value;
-    el.dispatchEvent(new Event("input", { bubbles: true }));
-    el.dispatchEvent(new Event("change", { bubbles: true }));
-  };
-  const user = document.querySelector('input[name="username"]');
-  const pw = document.querySelector('input[name="password"]');
-  const btn = document.getElementById("m_login_signin_submit");
-  if (!user || !pw || !btn) return "form-not-found";
-  set(user, roll);
-  set(pw, pass);
+// ---- Signing in again ----
+// FLEX's sign-in page has a Cloudflare check, so the form has to be filled in a real page.
+// That page is opened out of sight: first as a frame inside an offscreen document (never shown),
+// then, if that doesn't work, in a minimized window. content/autologin.js fills the form; it only
+// gets the roll number and password from here while a sign-in is in progress, for the page we opened.
+// Only when the user pressed "Check now" and both hidden tries failed is a small window shown,
+// so they can click Sign In themselves.
+const OFFSCREEN_PAGE = "offscreen/signin.html";
+const FRAME_RULE_ID = 4101;
+let pending = null; // { kind: "offscreen" | "tab", tabId, ready, roll, pass, resolve }
 
-  const token = () => document.querySelector('[name="cf-turnstile-response"]');
-  for (let i = 0; i < 30; i++) {
-    const t = token();
-    if (!t || t.value) break;
-    await new Promise((r) => setTimeout(r, 1000));
-  }
-  const t = token();
-  if (t && !t.value) return "check-not-passed";
-  btn.click();
-  return "submitted";
+// Starts listening for the sign-in page before it is opened, so its first message isn't missed.
+// For a window, the tab id is filled in once the window exists (see setTab).
+function expectSignIn(kind, roll, pass) {
+  let setTab;
+  const ready = kind === "tab" ? new Promise((r) => { setTab = r; }) : Promise.resolve();
+  let resolve;
+  const reported = new Promise((r) => { resolve = r; });
+  pending = { kind, tabId: null, ready, roll, pass, resolve };
+  const p = pending;
+  return { reported, setTab: (id) => { p.tabId = id; setTab(id); } };
 }
 
-async function waitForLogin(tabId, seconds) {
-  for (let i = 0; i < seconds; i++) {
-    await sleep(1000);
-    let t;
-    try { t = await chrome.tabs.get(tabId); } catch { return false; }
-    if (!/login/i.test(t.url || "")) return true;
-  }
-  return false;
-}
-
-async function autoLogin(roll, pass) {
-  const win = await chrome.windows.create({
-    url: LOGIN_URL,
-    type: "popup",
-    focused: false,
-    width: 420,
-    height: 520,
-    left: 20,
-    top: 20,
-  });
-  const tabId = win.tabs[0].id;
-  const close = async () => { try { await chrome.windows.remove(win.id); } catch {} };
-
+async function signedIn() {
   try {
-    await sleep(4000);
-    const [{ result }] = await chrome.scripting.executeScript({
-      target: { tabId },
-      func: fillAndSubmit,
-      args: [roll, pass],
-    });
+    const res = await fetch(MARKS_PAGE, { credentials: "include", cache: "no-store" });
+    return res.ok && !/login/i.test(res.url);
+  } catch (_) { return false; }
+}
 
-    let loggedIn = false;
-    if (result === "submitted") loggedIn = await waitForLogin(tabId, 20);
-    if (!loggedIn) {
-      try { await chrome.windows.update(win.id, { focused: true }); } catch {}
-      notify("FixForFlex", "Flex sign-in needs a manual click. Click Sign In in the Flex window.");
-      loggedIn = await waitForLogin(tabId, 180);
-    }
-    await close();
-    return loggedIn;
-  } catch (e) {
-    await close();
-    return false;
+// Waits for autologin.js to report back, then for FLEX to accept the sign-in.
+// Returns "ok", "check-not-passed", "form-not-found" or "timeout".
+// With waitForUser (the visible window), it keeps waiting for the user to click Sign In themselves.
+async function runSignIn(reported, seconds, waitForUser = false) {
+  const deadline = Date.now() + seconds * 1000;
+  let result = null;
+  reported.then((r) => { result = r; });
+  while (Date.now() < deadline) {
+    await sleep(waitForUser ? 4000 : 2000);
+    if (result && result !== "submitted" && !waitForUser) return result;
+    if ((result === "submitted" || waitForUser) && (await signedIn())) return "ok";
+    await chrome.storage.local.get("lastCheck"); // keeps the service worker awake meanwhile
+  }
+  return (await signedIn()) ? "ok" : "timeout";
+}
+
+// Lets the FLEX sign-in page load inside the offscreen document: FLEX forbids being framed,
+// so for frames that don't belong to any tab (only the offscreen one) those headers are dropped.
+async function allowFraming(on) {
+  await chrome.declarativeNetRequest.updateSessionRules({
+    removeRuleIds: [FRAME_RULE_ID],
+    addRules: on ? [{
+      id: FRAME_RULE_ID,
+      priority: 1,
+      action: {
+        type: "modifyHeaders",
+        responseHeaders: [
+          { header: "x-frame-options", operation: "remove" },
+          { header: "content-security-policy", operation: "remove" },
+        ],
+      },
+      condition: {
+        requestDomains: ["flexstudent.nu.edu.pk"],
+        resourceTypes: ["sub_frame"],
+        tabIds: [chrome.tabs.TAB_ID_NONE],
+      },
+    }] : [],
+  });
+}
+
+async function closeOffscreen() {
+  try { await chrome.offscreen.closeDocument(); } catch (_) {}
+}
+
+async function signInOffscreen(roll, pass) {
+  if (!chrome.offscreen) return "unsupported";
+  try {
+    await closeOffscreen(); // only one offscreen document at a time; start from a fresh page
+    await allowFraming(true);
+    const { reported } = expectSignIn("offscreen", roll, pass);
+    await chrome.offscreen.createDocument({
+      url: OFFSCREEN_PAGE,
+      reasons: ["IFRAME_SCRIPTING"],
+      justification: "Signs in to FLEX again in the background when the session has expired.",
+    });
+    return await runSignIn(reported, 50);
+  } catch (_) {
+    return "error";
+  } finally {
+    pending = null;
+    await closeOffscreen();
+    try { await allowFraming(false); } catch (_) {}
   }
 }
+
+async function signInWindow(roll, pass, minimized) {
+  let win;
+  const { reported, setTab } = expectSignIn("tab", roll, pass);
+  try {
+    win = await chrome.windows.create(minimized
+      ? { url: LOGIN_URL, type: "popup", state: "minimized" }
+      : { url: LOGIN_URL, type: "popup", focused: true, width: 420, height: 560, left: 20, top: 20 });
+  } catch (_) { pending = null; return "error"; }
+  try {
+    setTab(win.tabs[0].id);
+    if (minimized) return await runSignIn(reported, 50);
+    notify("FixForFlex", "Flex sign-in needs a manual click. Click Sign In in the Flex window.");
+    return await runSignIn(reported, 180, true);
+  } finally {
+    pending = null;
+    try { await chrome.windows.remove(win.id); } catch (_) {}
+  }
+}
+
+// Returns "ok", or why it failed ("check-not-passed" means the Cloudflare check, not the password).
+async function autoLogin(roll, pass, manual) {
+  let r = await signInOffscreen(roll, pass);
+  if (r === "ok") return r;
+  const r2 = await signInWindow(roll, pass, true);
+  if (r2 === "ok") return r2;
+  if (r2 !== "error") r = r2;
+  if (manual) return signInWindow(roll, pass, false);
+  return r;
+}
+
+chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  if (!msg || !pending || (msg.type !== "autologin-ready" && msg.type !== "autologin-result")) return;
+  const p = pending;
+  if (sender.origin !== "https://flexstudent.nu.edu.pk") return;
+  p.ready.then(() => {
+    const ours = p === pending && (p.kind === "offscreen"
+      ? !sender.tab // only the offscreen frame has no tab
+      : sender.tab && sender.tab.id === p.tabId && sender.frameId === 0);
+    if (!ours) return reply(null);
+    if (msg.type === "autologin-ready") reply({ roll: p.roll, pass: p.pass });
+    else { p.resolve(msg.result); reply(null); }
+  });
+  return true; // replies after the window's tab id is known
+});
 
 // Remembers how the last check went, for the popup.
 const setStatus = (status) => chrome.storage.local.set({ lastCheck: { at: Date.now(), status } });
@@ -273,11 +340,12 @@ async function check(manual = false) {
       const { loginBlocked } = await chrome.storage.local.get("loginBlocked");
       if (loginBlocked && !manual) { await setStatus("login-failed"); return; }
 
-      const loggedIn = await autoLogin(cfg.flexRoll, cfg.flexPass);
-      if (!loggedIn) {
+      const login = await autoLogin(cfg.flexRoll, cfg.flexPass, manual);
+      if (login !== "ok") {
         await chrome.storage.local.set({ loginBlocked: true });
         await setStatus("login-failed");
-        notify("FixForFlex: sign-in failed", "Check your roll number and password in the FixForFlex popup, then press Check now.");
+        if (login === "check-not-passed") notify("FixForFlex: sign-in failed", "FLEX's Cloudflare check didn't pass in the background. Press Check now in the FixForFlex popup to sign in.");
+        else notify("FixForFlex: sign-in failed", "Check your roll number and password in the FixForFlex popup, then press Check now.");
         return;
       }
       await chrome.storage.local.set({ loginBlocked: false });
