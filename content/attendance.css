@@ -2,7 +2,7 @@
    Everything that restyles FLEX's own markup is pure CSS (no classes added by script), so the page
    is styled from the first paint and never flashes the old look. Only the summary line comes from attendance.js. */
 html.mw-theme { --warn: #8a5a00; }
-html.mw-theme.mw-dark { --warn: #e0b154; }
+html.mw-theme.mw-dark { --warn: var(--bad); }
 
 /* Tabs: no focus box after clicking; the underline already marks the open course */
 html.mw-theme .m-tabs-line .m-tabs__link:focus, html.mw-theme .m-tabs-line .m-tabs__link:focus-visible { outline: none !important; box-shadow: none !important; }
@@ -26,7 +26,7 @@ html.mw-theme .mw-att-sum.mw-bad b:last-of-type { color: var(--bad) !important; 
 /* "Attendance Pecentage:" label -> "ATTENDANCE" */
 html.mw-theme .tab-pane > .row:first-child .col-md-6 .row > .col-md-4 { font-size: 0 !important; padding-top: 4px; text-align: right; }
 html.mw-theme .tab-pane > .row:first-child .col-md-6 .row > .col-md-4::before {
-  content: "Attendance"; font-size: 12px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase; color: var(--ink-3);
+  content: "Attendance"; font-size: 12px; font-weight: 600; color: var(--ink-3);
 }
 
 /* The bar: thin and solid, percentage beside it */

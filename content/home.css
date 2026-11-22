@@ -15,7 +15,7 @@ html.mw-theme.mw-home .m-portlet__body .row > [class*="col-"] { margin-bottom: 0
 
 /* Contact: "Permanent" / "Current" as small section labels */
 html.mw-theme.mw-home .m-portlet__body h5, html.mw-theme.mw-home .m-portlet__body h5 * {
-  color: var(--ink-2) !important; font-size: 13px !important; font-weight: 700 !important; letter-spacing: .06em; text-transform: uppercase; margin: 0 0 14px !important;
+  color: var(--ink-2) !important; font-size: 13px !important; font-weight: 700 !important; margin: 0 0 14px !important;
 }
 
 /* Family table: plain left-aligned columns */
