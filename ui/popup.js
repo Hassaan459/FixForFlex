@@ -13,16 +13,14 @@ function ago(t) {
 function render(st) {
   $("watch").checked = !!st.watchEnabled;
   $("login").hidden = !st.watchEnabled;
-  const last = st.lastCheck;
-  let text;
-  if (!st.flexRoll) text = "On. Waiting for your FLEX sign-in.";
-  else if (last && last.status === "signed-out") text = "Signed out of FLEX. Save your sign-in below.";
+  // Only a problem gets a line under "Notifications"; on and off speak for themselves.
+  const last = st.watchEnabled && st.lastCheck;
+  let text = "";
+  if (last && last.status === "signed-out") text = "Signed out of FLEX. Save your sign-in below.";
   else if (last && last.status === "login-failed") text = "Couldn't sign in. Fix your roll number and password below.";
-  else if (last && last.status === "error") text = `On. Couldn't reach FLEX ${ago(last.at)}.`;
-  else if (last) text = `On. Marks up to date as of ${ago(last.at)}.`;
-  else text = "On. You'll be notified when your marks change.";
-  if (!st.watchEnabled) text = "Off. Turn on and save your FLEX sign-in to get notifications. Without it, FixForFlex sends none.";
+  else if (last && last.status === "error") text = `Couldn't reach FLEX ${ago(last.at)}.`;
   $("status").textContent = text;
+  $("status").hidden = !text;
 
   const up = st.update;
   $("update").hidden = !up;
