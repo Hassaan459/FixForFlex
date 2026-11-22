@@ -1,0 +1,16 @@
+/* FixForFlex: "Signing you in…" cover drawn by signin-fast.js over FLEX's sign-in page. */
+.mw-signing {
+  position: fixed; inset: 0; z-index: 2147483646;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--desk, #f5f6f8);
+  color: var(--ink, #1a1a1a);
+  font: 600 15px/1.4 var(--sans, "Segoe UI", system-ui, sans-serif);
+}
+html.mw-dark .mw-signing { background: var(--desk, #0d0d0d); color: var(--ink, #ececec); }
+.mw-signing-box { display: flex; align-items: center; gap: 12px; }
+.mw-signing-spin {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid currentColor; border-right-color: transparent;
+  animation: mw-signing-spin .8s linear infinite;
+}
+@keyframes mw-signing-spin { to { transform: rotate(360deg); } }
