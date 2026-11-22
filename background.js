@@ -2,7 +2,25 @@
 //   flexRoll, flexPass   FLEX sign-in, used only to sign in again when the session has expired
 //   watchEnabled         background marks checks on/off (off until the user turns it on)
 //   watchEvery           minutes between checks (owner only; everyone else checks every 30 minutes)
+//   enabled              FixForFlex on/off (on unless switched off); off leaves FLEX untouched
 const DEFAULTS = { watchEnabled: false, watchEvery: 30 };
+importScripts("content/registry.js");
+
+// ---- On/off ----
+const isEnabled = async () => (await chrome.storage.local.get("enabled")).enabled !== false;
+
+// FLEX's page scripts and styles are registered only while FixForFlex is on.
+async function syncContentScripts() {
+  try { await chrome.scripting.unregisterContentScripts(); } catch (_) {}
+  if (await isEnabled()) await chrome.scripting.registerContentScripts(FFX_CONTENT_SCRIPTS);
+}
+
+async function reloadFlexTabs() {
+  try {
+    const tabs = await chrome.tabs.query({ url: "https://flexstudent.nu.edu.pk/*" });
+    for (const t of tabs) chrome.tabs.reload(t.id);
+  } catch (_) {}
+}
 const STANDARD_EVERY = 30;
 // The developer's own roll number, hashed, so only that copy can change the interval.
 const OWNER_HASH = "c2f8eeb78c0a0b1a25d9640795f5782d2986cc132eef84574d90688173739706";
@@ -327,6 +345,7 @@ async function check(manual = false) {
   if (busy) return;
   busy = true;
   try {
+    if (!(await isEnabled())) return;
     const cfg = await settings();
     if (!manual && !cfg.watchEnabled) return;
     let { ok, rows, semId } = await fetchRows();
@@ -430,7 +449,7 @@ async function userOnFlex() {
 
 async function keepAlive() {
   const { on, creds } = await rememberState();
-  if (busy || !on) return;
+  if (busy || !on || !(await isEnabled())) return;
   busy = true;
   try {
     if (await signedIn()) return; // that page load was the keep-alive
@@ -511,6 +530,7 @@ function newer(a, b) { // true if version a > version b ("1.10" > "1.9", "1.1" >
 
 async function checkForUpdate() {
   try {
+    if (!(await isEnabled())) return;
     const res = await fetch(RELEASES_API, { headers: { Accept: "application/vnd.github+json" }, cache: "no-store" });
     if (!res.ok) return; // offline, rate-limited, or the repo is private: say nothing
     const rel = await res.json();
@@ -527,6 +547,11 @@ async function checkForUpdate() {
 async function setupAlarms() {
   const cfg = await settings();
   await chrome.alarms.clear("check-marks");
+  if (!(await isEnabled())) {
+    await chrome.alarms.clear("keep-alive");
+    await chrome.alarms.clear("check-update");
+    return;
+  }
   const every = (await isOwner(cfg.flexRoll)) ? Math.max(1, Number(cfg.watchEvery) || STANDARD_EVERY) : STANDARD_EVERY;
   if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: every });
   if (!(await chrome.alarms.get("keep-alive"))) chrome.alarms.create("keep-alive", { delayInMinutes: 1, periodInMinutes: KEEPALIVE_MINUTES });
@@ -542,6 +567,7 @@ chrome.runtime.onInstalled.addListener(async ({ reason }) => {
       await chrome.storage.local.set({ watchEnabled: true, watchEvery: 1 });
     }
   }
+  await syncContentScripts();
   await setupAlarms();
   checkForUpdate();
 });
@@ -554,6 +580,16 @@ chrome.alarms.onAlarm.addListener((a) => {
 // Popup changed the schedule: start over with the new one.
 chrome.storage.onChanged.addListener((ch, area) => {
   if (area !== "local") return;
+  if (ch.enabled) {
+    (async () => {
+      await syncContentScripts();
+      await setupAlarms();
+      if (!(await isEnabled())) { pending = null; await closeOffscreen(); }
+      else checkForUpdate();
+      await reloadFlexTabs();
+    })();
+    return;
+  }
   if (ch.watchEnabled || ch.watchEvery || ch.flexRoll) {
     setupAlarms();
     if (ch.watchEnabled && ch.watchEnabled.newValue === true && !ch.watchEnabled.oldValue) check(true);
