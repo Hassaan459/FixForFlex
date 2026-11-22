@@ -6,6 +6,20 @@
   if (!isHome()) return;
   document.documentElement.classList.add("mw-home");
 
+  // FLEX shows the home page right after sign-in at an address that, when reloaded, signs you out
+  // (reloading the Marks page doesn't). Point the address bar at the sidebar's own Home link,
+  // the address FLEX uses for Home everywhere else, so a reload just reloads the page.
+  // This only changes what the address bar shows; nothing is loaded.
+  try {
+    const here = new URL(location.href);
+    if (!here.searchParams.has("dump")) {
+      const link = [...document.querySelectorAll('a[href*="dump="]')]
+        .map((a) => new URL(a.getAttribute("href"), location.href))
+        .find((u) => u.origin === location.origin && (u.pathname === "/" || /^\/home$/i.test(u.pathname)));
+      if (link) history.replaceState(history.state, "", link.pathname + link.search);
+    }
+  } catch (_) {}
+
   document.querySelectorAll(".m-portlet__body p").forEach((p) => {
     const label = p.querySelector(":scope > .m--font-boldest");
     if (!label) return;
