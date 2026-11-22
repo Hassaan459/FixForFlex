@@ -2,11 +2,20 @@
 // 1. Makes "Remember me" work: FLEX's own version looks for an #username field that doesn't exist,
 //    so it never saved anything. Here, ticking it saves your roll number in the extension's storage
 //    and fills it in (with the box ticked) next time. Unticking it forgets the roll number.
+//    Ticking it also keeps you signed in: background.js stops FLEX's session from timing out
+//    until you press Logout.
 //    Your password is never stored here; Chrome's own password manager can offer to save it.
 // 2. Adds the light/dark switch, since the sign-in page has no top bar for theme.js to put it in.
 // Nothing here renames, moves or replaces the fields, the Sign In button or the Cloudflare box,
 // so background.js auto-login keeps working.
 (() => {
+  // Logout on any FLEX page: stop keeping the session going (background.js) until the next
+  // sign-in with Remember me ticked, so FixForFlex never signs you back in after you signed out.
+  document.addEventListener("click", (e) => {
+    const a = e.target && e.target.closest && e.target.closest('a[href*="/Login/logout" i]');
+    if (a) { try { chrome.storage.local.set({ mwKeepSignedIn: false }); } catch (_) {} }
+  }, true);
+
   const form = document.getElementById("frmlogin");
   if (!form) return; // not the sign-in page
 
@@ -47,6 +56,8 @@
       const roll = (user.value || "").trim();
       if (remember.checked && roll) store.set(roll);
       else if (!remember.checked) store.clear();
+      // Remember me also keeps you signed in: background.js keeps the FLEX session from timing out.
+      try { chrome.storage.local.set({ mwKeepSignedIn: remember.checked }); } catch (_) {}
     };
     remember.addEventListener("change", () => { if (!remember.checked) store.clear(); });
     // Capture phase, so this runs before FLEX's own click handler. Pressing Enter also "clicks" Sign In.

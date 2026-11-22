@@ -4,6 +4,7 @@ config.js
 # Saved FLEX pages contain personal student data
 *.html
 !ui/*.html
+!offscreen/*.html
 *_files/
 
 # OS / editor junk

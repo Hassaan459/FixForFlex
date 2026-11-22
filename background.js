@@ -388,6 +388,39 @@ async function check(manual = false) {
   }
 }
 
+// ---- Remember me: staying signed in ----
+// FLEX's own "Remember me" only pre-fills the roll number; the sign-in itself is a server session
+// that FLEX ends after a stretch with no page loads (it was gone ~30 minutes after signing in).
+// So while Remember me is on (ticked at the last sign-in, see content/login.js), FixForFlex loads a
+// FLEX page every KEEPALIVE_MINUTES, which counts as activity and keeps that session going.
+// If the session has ended anyway (Chrome was closed, the PC slept, FLEX restarted) and the sign-in
+// is saved in the popup, it signs in again out of sight, the same way the marks checks do.
+const KEEPALIVE_MINUTES = 5;
+
+async function keepSignedIn() {
+  const { mwKeepSignedIn, mwRememberRoll } = await chrome.storage.local.get(["mwKeepSignedIn", "mwRememberRoll"]);
+  // Copies from before this setting existed: a remembered roll number means Remember me was ticked.
+  return mwKeepSignedIn === undefined ? !!mwRememberRoll : !!mwKeepSignedIn;
+}
+
+async function keepAlive() {
+  if (busy || !(await keepSignedIn())) return;
+  busy = true;
+  try {
+    if (await signedIn()) return; // that page load was the keep-alive
+    const cfg = await settings();
+    if (!cfg.flexRoll || !cfg.flexPass) return; // nothing saved to sign in with
+    const { loginBlocked } = await chrome.storage.local.get("loginBlocked");
+    if (loginBlocked) return; // the saved sign-in failed before: wait for the user to fix it
+    const login = await autoLogin(cfg.flexRoll, cfg.flexPass, false);
+    if (login === "ok") await chrome.storage.local.set({ loginBlocked: false });
+    else if (login !== "check-not-passed") await chrome.storage.local.set({ loginBlocked: true });
+  } catch (_) {
+  } finally {
+    busy = false;
+  }
+}
+
 // ---- Update notice ----
 // Unpacked installs never update themselves, so once a day look at the latest GitHub release
 // and remember it; the popup shows a download link when it is newer than this copy.
@@ -423,6 +456,7 @@ async function setupAlarms() {
   await chrome.alarms.clear("check-marks");
   const every = (await isOwner(cfg.flexRoll)) ? Math.max(1, Number(cfg.watchEvery) || STANDARD_EVERY) : STANDARD_EVERY;
   if (cfg.watchEnabled) chrome.alarms.create("check-marks", { periodInMinutes: every });
+  if (!(await chrome.alarms.get("keep-alive"))) chrome.alarms.create("keep-alive", { delayInMinutes: 1, periodInMinutes: KEEPALIVE_MINUTES });
   if (!(await chrome.alarms.get("check-update"))) chrome.alarms.create("check-update", { delayInMinutes: 1, periodInMinutes: 24 * 60 });
 }
 
@@ -442,6 +476,7 @@ chrome.runtime.onStartup.addListener(setupAlarms);
 chrome.alarms.onAlarm.addListener((a) => {
   if (a.name === "check-marks") check();
   if (a.name === "check-update") checkForUpdate();
+  if (a.name === "keep-alive") keepAlive();
 });
 // Popup changed the schedule: start over with the new one.
 chrome.storage.onChanged.addListener((ch, area) => {
@@ -451,6 +486,8 @@ chrome.storage.onChanged.addListener((ch, area) => {
     if (ch.watchEnabled && ch.watchEnabled.newValue === true && !ch.watchEnabled.oldValue) check(true);
   }
   if (ch.flexRoll || ch.flexPass) chrome.storage.local.set({ loginBlocked: false });
+  // Just signed in with Remember me ticked: start keeping that session going right away.
+  if (ch.mwKeepSignedIn && ch.mwKeepSignedIn.newValue === true) setTimeout(keepAlive, 60e3);
 });
 // From the popup.
 chrome.runtime.onMessage.addListener((msg, _sender, reply) => {
