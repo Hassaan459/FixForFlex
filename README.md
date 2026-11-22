@@ -26,7 +26,7 @@ The popup tells you when a new version is out. Download the new zip, unzip it ov
 
 ## Remember me
 
-Tick **Remember me** when you sign in to FLEX and you stay signed in: FixForFlex keeps FLEX's session from timing out while Chrome is open, until you press Logout. If the session ends anyway (Chrome was closed or the PC slept) and your roll number and password are saved in the popup, FixForFlex signs you back in out of sight.
+Tick **Remember me** when you sign in to FLEX and you stay signed in. FixForFlex keeps FLEX's session from timing out while Chrome is open, and if it ends anyway (Chrome was closed or the PC slept) it signs you back in, out of sight or on FLEX's sign-in page. For that it keeps the roll number and password you signed in with, in this browser's extension storage only. Untick Remember me or press Logout on FLEX and the password is forgotten.
 
 ## Notifications
 
