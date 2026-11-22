@@ -448,9 +448,14 @@ async function keepAlive() {
 }
 
 // FLEX's sign-in page opened in a tab (not by us): content/autologin.js asks for the remembered
-// sign-in. One try per tab every 2 minutes, so a changed password can't cause a sign-in loop.
+// sign-in. One try per tab every 2 minutes, so a changed password can't cause a sign-in loop;
+// once that tab reaches a signed-in FLEX page (content/login.js says so), it may try again.
 const pageTries = new Map(); // tabId -> time of last try
 chrome.runtime.onMessage.addListener((msg, sender, reply) => {
+  if (msg && msg.type === "flex-signed-in") {
+    if (sender.tab) pageTries.delete(sender.tab.id);
+    return;
+  }
   if (!msg || msg.type !== "remember-signin") return;
   if (pending || sender.origin !== "https://flexstudent.nu.edu.pk" || !sender.tab || sender.frameId !== 0) return reply(null);
   const last = pageTries.get(sender.tab.id) || 0;

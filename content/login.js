@@ -19,7 +19,12 @@
   }, true);
 
   const form = document.getElementById("frmlogin");
-  if (!form) return; // not the sign-in page
+  if (!form) {
+    // A signed-in FLEX page: Remember me's sign-in worked, so this tab may use it again
+    // (e.g. FLEX signs you out when you reload its home page).
+    try { chrome.runtime.sendMessage({ type: "flex-signed-in" }, () => void chrome.runtime.lastError); } catch (_) {}
+    return; // not the sign-in page
+  }
 
   const user = form.querySelector('input[name="username"]');
   const pass = form.querySelector('input[name="password"]');
