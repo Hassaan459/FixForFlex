@@ -1,6 +1,6 @@
 // Marks Watcher: fixes the totals on the FLEX StudentMarks page, inside FLEX's own sections.
-//  - Each category's "Total" row gets the real weightage (FLEX truncates it to a whole number)
-//    and a weighted class average.
+//  - Each category's totals come from FLEX's own "Total" row, unchanged, so "best of N"
+//    sections (e.g. best 7 of 11 quizzes) match FLEX exactly.
 //  - "Grand Total Marks" is always open and filled in, using FLEX's own class stats request.
 (() => {
   "use strict";
@@ -58,17 +58,23 @@
     // Teacher hasn't set weightages yet (all 0): fall back to raw marks.
     r.unweighted = r.weight === 0 && r.rawOut > 0;
     const foot = table.querySelector('tr[class^="totalColumn_"]');
+    const cell = (sel) => (foot ? foot.querySelector(sel) : null);
+    const flexW = num(txt(cell(".totalColweightage")));
+    const flexO = num(txt(cell(".totalColObtMarks")));
     if (foot && r.unweighted) {
-      const set = (sel, v) => { const c = foot.querySelector(sel); if (c) c.textContent = v; };
+      const set = (sel, v) => { const c = cell(sel); if (c) c.textContent = v; };
       set(".totalColweightage", "Not set");
       set(".totalColObtMarks", `${+r.rawObt.toFixed(2)} / ${+r.rawOut.toFixed(2)}`);
       if (r.rawClassOut) set(".totalColAverageMarks", fmt(r.rawClass));
       foot.classList.add("mw-total-row");
-    } else if (foot) {
-      const set = (sel, v) => { const c = foot.querySelector(sel); if (c) c.textContent = v; };
-      set(".totalColweightage", fmt(r.weight));
-      set(".totalColObtMarks", fmt(r.earned));
-      if (r.classWeight) set(".totalColAverageMarks", fmt((r.classEarned / r.classWeight) * r.gradedWeight));
+    } else if (foot && Number.isFinite(flexW)) {
+      // FLEX's own Total row is the truth: it knows about "best of N" (dropped quizzes etc.),
+      // which adding up the rows can't. Show its numbers exactly and use them everywhere.
+      r.weight = flexW;
+      r.earned = Number.isFinite(flexO) ? flexO : 0;
+      r.gradedWeight = Number.isFinite(flexO) ? flexW : 0;
+      r.classEarned = 0; r.classWeight = 0;
+      r.fromFlex = true;
       foot.classList.add("mw-total-row");
     }
     const coll = table.closest(".collapse");
@@ -247,7 +253,7 @@
         <div class="mw-n">${Number.isFinite(pct) ? pct.toFixed(1) + "% so far" : "No marks yet"}</div></div>
       <div class="mw-stat mw-avg"><div class="mw-k">Class average</div><div class="mw-v mw-c-avg">${fmt(classAvg) || "–"}</div><div class="mw-n">&nbsp;</div></div>
       <div class="mw-stat mw-minmax"><div class="mw-k">Class min / max</div><div class="mw-v"><span class="mw-c-min">–</span> / <span class="mw-c-max">–</span></div><div class="mw-n">&nbsp;</div></div>
-      <div class="mw-stat"><div class="mw-k">Total weightage</div><div class="mw-v">${fmt(weight)}</div><div class="mw-n">${fmt(gradedWeight)} graded</div></div>`;
+      <div class="mw-stat"><div class="mw-k">Total weightage</div><div class="mw-v">${fmt(weight)}</div><div class="mw-n">&nbsp;</div></div>`;
     grandTable.parentElement.insertBefore(stats, grandTable);
     const diffEl = stats.querySelector(".mw-avg .mw-n");
     const showDiff = (avg) => {
