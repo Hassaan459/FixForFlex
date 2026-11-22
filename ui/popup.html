@@ -18,14 +18,14 @@
   <section>
     <div class="line">
       <div>
-        <div class="bold">Marks alerts</div>
+        <div class="bold">Notifications</div>
         <div class="quiet small" id="status">…</div>
       </div>
-      <label class="switch" title="Check marks in the background"><input type="checkbox" id="watch"><span></span></label>
+      <label class="switch" title="Get notifications when your marks change, even while FLEX is closed"><input type="checkbox" id="watch"><span></span></label>
     </div>
     <div id="login" hidden>
       <div id="loginForm">
-        <p class="quiet small hint">FLEX signs you out after a while. Save your sign-in so checks keep working. It stays in this browser and is typed only into FLEX's sign-in page.</p>
+        <p class="quiet small hint">Enter your FLEX roll number and password to get notifications, even while FLEX is closed. They stay in this browser and are typed only into FLEX's sign-in page.</p>
         <input type="text" id="flexRoll" placeholder="Roll number (22I-0000)" autocomplete="off" spellcheck="false">
         <div class="pw">
           <input type="password" id="flexPass" placeholder="Password" autocomplete="off">
@@ -41,7 +41,7 @@
         <button type="button" class="btn" id="clearLogin">Remove account</button>
       </div>
       <div class="line every" id="everyRow" hidden>
-        <span class="small">Check every</span>
+        <span class="small">Update every</span>
         <select id="watchEvery">
           <option value="1">1 minute</option>
           <option value="5">5 minutes</option>
