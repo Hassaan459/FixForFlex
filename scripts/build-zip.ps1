@@ -1,10 +1,10 @@
-# Builds dist\FixForFlex-<version>.zip with only the files the extension needs.
+# Builds dist\FixForFlex.zip with only the files the extension needs.
 # Run from the extension folder:  powershell -ExecutionPolicy Bypass -File scripts\build-zip.ps1
 $ErrorActionPreference = "Stop"
 $root = Split-Path -Parent $PSScriptRoot
 $version = (Get-Content (Join-Path $root "manifest.json") -Raw | ConvertFrom-Json).version
 $stage = Join-Path $root "dist\FixForFlex"
-$zip = Join-Path $root "dist\FixForFlex-$version.zip"
+$zip = Join-Path $root "dist\FixForFlex.zip"
 
 if (Test-Path $stage) { Remove-Item $stage -Recurse -Force }
 New-Item -ItemType Directory -Path $stage | Out-Null
