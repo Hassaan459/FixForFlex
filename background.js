@@ -393,7 +393,7 @@ async function check(manual = false) {
 // and remember it; the popup shows a download link when it is newer than this copy.
 const RELEASES_API = "https://api.github.com/repos/Hassaan459/FixForFlex/releases/latest";
 
-function newer(a, b) { // true if version a > version b ("3.10" > "3.9")
+function newer(a, b) { // true if version a > version b ("1.10" > "1.9", "1.1" > "1.0")
   const pa = String(a).replace(/^v/i, "").split(".").map(Number);
   const pb = String(b).replace(/^v/i, "").split(".").map(Number);
   for (let i = 0; i < Math.max(pa.length, pb.length); i++) {
