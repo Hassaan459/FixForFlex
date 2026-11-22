@@ -43,6 +43,6 @@ FLEX signs you out after a while. With your roll number and password saved, FixF
 - `offscreen/`: the hidden page used to sign in again in the background
 - `fonts/`: bundled web fonts (see `fonts/LICENSE.txt`)
 
-To make a release, bump `version` in `manifest.json`, commit, then push a matching tag (`git tag v1.1 && git push origin v1.1`). GitHub Actions builds the zip and attaches it to the release. To build the zip locally, run `scripts\build-zip.ps1`.
+To make a release, bump `version` in `manifest.json`, commit, then push a matching tag (`git tag v1.1 && git push origin v1.1`) or run the Release workflow from the Actions tab. GitHub Actions builds the zip and attaches it to the release. To build the zip locally, run `scripts\build-zip.ps1`.
 
 Don't commit saved FLEX pages (`*.html`, `*_files/`). They contain personal student data, and `.gitignore` blocks them.

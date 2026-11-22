@@ -1,10 +1,11 @@
-# Push a tag like v1.1 and this builds FixForFlex.zip and attaches it to a GitHub release.
+# Builds FixForFlex.zip and publishes a GitHub release for the version in manifest.json.
+# Start it by pushing a tag like v1.1, or from the Actions tab ("Run workflow").
 # The zip keeps the same name every release, so .../releases/latest/download/FixForFlex.zip always works.
-# The tag must match "version" in manifest.json.
 name: Release
 on:
   push:
     tags: ["v*"]
+  workflow_dispatch:
 permissions:
   contents: write
 jobs:
@@ -12,10 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Check the tag matches manifest.json
+      - name: Read the version from manifest.json
         run: |
           v=$(jq -r .version manifest.json)
-          [ "v$v" = "$GITHUB_REF_NAME" ] || { echo "Tag $GITHUB_REF_NAME but manifest.json says $v"; exit 1; }
+          if [ "$GITHUB_REF_TYPE" = "tag" ] && [ "v$v" != "$GITHUB_REF_NAME" ]; then
+            echo "Tag $GITHUB_REF_NAME but manifest.json says $v"; exit 1
+          fi
           echo "VERSION=$v" >> "$GITHUB_ENV"
       - name: Build zip
         run: |
@@ -25,4 +28,4 @@ jobs:
       - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" dist/FixForFlex.zip --title "FixForFlex $VERSION" --notes-file .github/release-notes.md --latest
+        run: gh release create "v$VERSION" dist/FixForFlex.zip --target "$GITHUB_SHA" --title "FixForFlex $VERSION" --notes-file .github/release-notes.md --latest
