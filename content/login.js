@@ -22,7 +22,14 @@
   if (!form) {
     // A signed-in FLEX page: Remember me's sign-in worked, so this tab may use it again
     // (e.g. FLEX signs you out when you reload its home page).
-    try { chrome.runtime.sendMessage({ type: "flex-signed-in" }, () => void chrome.runtime.lastError); } catch (_) {}
+    // Also passes on the sidebar's Home link (it carries FLEX's ?dump= token), which is where
+    // opening FLEX goes when you are still signed in (content/signin-fast.js).
+    const home = [...document.querySelectorAll('a[href*="dump="]')]
+      .map((a) => { try { return new URL(a.getAttribute("href"), location.href); } catch (_) { return null; } })
+      .find((u) => u && u.origin === location.origin && u.pathname === "/");
+    try {
+      chrome.runtime.sendMessage({ type: "flex-signed-in", home: home ? home.href : null }, () => void chrome.runtime.lastError);
+    } catch (_) {}
     return; // not the sign-in page
   }
 
