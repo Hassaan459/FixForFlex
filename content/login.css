@@ -35,7 +35,6 @@ html.mw-theme .m-login.m-login--1 .m-login__wrapper .m-login__head .m-login__des
 html.mw-theme .m-login .m-form__group { margin: 0 0 18px !important; padding: 0 !important; }
 html.mw-theme .m-login .m-form__group h5 {
   margin: 0 0 7px; color: var(--ink-3) !important; font-size: 11.5px !important; font-weight: 600 !important;
-  letter-spacing: .1em; text-transform: uppercase;
 }
 html.mw-theme .m-login .m-form__help { display: none !important; } /* repeats the placeholder */
 

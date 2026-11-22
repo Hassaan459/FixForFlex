@@ -2,8 +2,8 @@
    Plus Jakarta Sans for bold text, Inter for regular text, navy ink on white paper, transcript-style ruled tables, very few rounded corners.
    Everything is scoped to html.mw-theme. Dark mode is html.mw-theme.mw-dark. */
 
-@font-face { font-family: "MW Jakarta"; font-weight: 400; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/inter-latin-400-normal.woff2") format("woff2"); }
-@font-face { font-family: "MW Jakarta"; font-weight: 500; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/inter-latin-500-normal.woff2") format("woff2"); }
+@font-face { font-family: "MW Jakarta"; font-weight: 400; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/plus-jakarta-sans-latin-400-normal.woff2") format("woff2"); }
+@font-face { font-family: "MW Jakarta"; font-weight: 500; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/plus-jakarta-sans-latin-500-normal.woff2") format("woff2"); }
 @font-face { font-family: "MW Jakarta"; font-weight: 600; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/plus-jakarta-sans-latin-600-normal.woff2") format("woff2"); }
 @font-face { font-family: "MW Jakarta"; font-weight: 700; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/plus-jakarta-sans-latin-700-normal.woff2") format("woff2"); }
 @font-face { font-family: "MW Jakarta"; font-weight: 800; font-style: normal; font-display: swap; src: url("chrome-extension://__MSG_@@extension_id__/fonts/plus-jakarta-sans-latin-800-normal.woff2") format("woff2"); }
@@ -24,7 +24,7 @@ html.mw-theme {
   --side: var(--paper); --side-ink: var(--ink-2); --side-quiet: var(--ink-3); --side-hi: var(--tint);
   --serif: "MW Jakarta", "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
   --sans: "MW Jakarta", "Plus Jakarta Sans", "Segoe UI", system-ui, sans-serif;
-  --mono: "MW Mono", "IBM Plex Mono", Consolas, monospace;
+  --mono: var(--sans);
   --side-w: 224px;
   color-scheme: light;
 }
@@ -37,7 +37,7 @@ html.mw-theme.mw-dark {
 }
 /* Accent: the FLEX logo colours. Sky blue in light mode, lime green in dark mode. Every page uses var(--accent). */
 html.mw-theme { --accent: #00ADEF; }
-html.mw-theme.mw-dark { --accent: #A6CE39; }
+html.mw-theme.mw-dark { --accent: #A6CE39; --navy: var(--accent); }
 html.mw-theme.mw-side-collapsed { --side-w: 68px; }
 
 /* ---------- Base ---------- */
@@ -54,7 +54,7 @@ html.mw-theme .m-portlet__head-text, html.mw-theme .m-subheader__title { font-fa
 
 /* ---------- Header ---------- */
 html.mw-theme .m-header, html.mw-theme .m-header .m-header-head, html.mw-theme .m-header .m-stack__item.m-header-head { background: var(--paper) !important; box-shadow: none !important; }
-html.mw-theme .m-header { border-bottom: 3px double var(--rule-2) !important; }
+html.mw-theme .m-header { border-bottom: 1px solid var(--rule) !important; }
 html.mw-theme .m-header .m-header-head * { background-color: transparent; }
 html.mw-theme .m-header .m-subheader__title { color: var(--ink) !important; font-size: 20px !important; border: 0 !important; }
 html.mw-theme .m-topbar__welcome { color: var(--ink-3) !important; font-size: 14px !important; }
@@ -95,7 +95,7 @@ html:not(.mw-theme) .mw-mode-btn { display: none; }
 /* ---------- Sidebar ---------- */
 html.mw-theme .m-aside-left, html.mw-theme .m-aside-menu, html.mw-theme .m-aside-left--skin-dark { background: var(--side) !important; }
 html.mw-theme .m-aside-left { border-right: 1px solid var(--rule) !important; box-shadow: none !important; }
-/* The logo corner is part of the header bar: same paper, and the header's double rule runs under it */
+/* The logo corner is part of the header bar: same paper, and the header's rule runs under it */
 html.mw-theme .m-brand, html.mw-theme .m-brand.m-brand--skin-dark { background: transparent !important; padding: 0 !important; }
 html.mw-theme .m-brand .m-brand__logo-wrapper { display: inline-flex !important; align-items: center; gap: 10px; text-decoration: none !important; }
 /* FLEX's header logo is its 16px tab icon stretched, so it blurs: icons/flex-mark.svg is the same mark as a vector */
@@ -113,7 +113,7 @@ html.mw-theme .m-aside-menu .m-menu__nav { padding: 8px 12px 18px !important; }
 html.mw-theme .m-aside-menu .m-menu__item-here { display: none !important; }
 html.mw-theme .mw-group-head {
   list-style: none; padding: 18px 8px 6px; white-space: nowrap;
-  font-family: var(--serif) !important; font-weight: 600; font-size: 11.5px; letter-spacing: .1em; text-transform: uppercase; color: var(--side-quiet);
+  font-family: var(--serif) !important; font-weight: 600; font-size: 12.5px; color: var(--side-quiet);
 }
 html.mw-theme .m-aside-menu .m-menu__nav > .m-menu__item > .m-menu__link {
   display: flex !important; flex-direction: row !important; align-items: center !important; gap: 12px !important;
@@ -214,7 +214,7 @@ html.mw-theme .table td:first-child, html.mw-theme .table th:first-child { text-
 html.mw-theme .table td:last-child, html.mw-theme .table th:last-child { padding-right: 18px !important; }
 html.mw-theme .table thead th, html.mw-theme .m-table.m-table--head-bg-info thead th {
   background: var(--tint) !important; color: var(--ink-2) !important; border-bottom: 1px solid var(--rule-2) !important;
-  font-size: 12px !important; font-weight: 600 !important; letter-spacing: .06em; text-transform: uppercase;
+  font-size: 12px !important; font-weight: 600 !important;
   padding: 9px 14px !important; white-space: nowrap;
 }
 html.mw-theme .table td { padding: 10px 14px !important; vertical-align: middle !important; }
@@ -222,7 +222,7 @@ html.mw-theme .table td, html.mw-theme .table td * { color: var(--ink) !importan
 html.mw-theme .table-striped tbody tr:nth-of-type(odd) { background: transparent !important; }
 html.mw-theme .table tbody tr.calculationrow:hover td { background: var(--tint) !important; }
 html.mw-theme .table tfoot td, html.mw-theme .table tr[class^="totalColumn_"] td {
-  border-top: 1px solid var(--ink-2) !important; border-bottom: 3px double var(--rule-2) !important; font-weight: 600 !important;
+  border-top: 1px solid var(--ink-2) !important; border-bottom: 1px solid var(--rule-2) !important; font-weight: 600 !important;
 }
 html.mw-theme .table tbody tr:last-child td { border-bottom: 0 !important; }
 
