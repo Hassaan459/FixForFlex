@@ -42,7 +42,7 @@
       if (!heads.length) return;
       bar = document.createElement("label");
       bar.className = "ff-fee-bar";
-      bar.innerHTML = `<span>Fee per credit hour</span><span class="ff-fee-rs">Rs</span><input type="number" min="0" step="500"><span class="ff-fee-hint">Set 0 to hide the estimate</span>`;
+      bar.innerHTML = `<span>Fee per credit hour</span><span class="ff-fee-rs">Rs</span><input type="number" min="0" step="500">`;
       const input = bar.querySelector("input");
       let t;
       input.addEventListener("input", () => {
