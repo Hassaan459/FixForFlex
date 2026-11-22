@@ -102,6 +102,13 @@ html.mw-theme .m-brand .m-brand__logo-wrapper { display: inline-flex !important;
 html.mw-theme .m-brand .m-brand__logo img { width: 26px; height: 26px; content: url("chrome-extension://__MSG_@@extension_id__/icons/flex-mark.svg"); }
 html.mw-theme .mw-brand-name { font: 700 17px/1 var(--serif); letter-spacing: .04em; color: var(--ink); }
 html.mw-theme.mw-side-collapsed .mw-brand-name { display: none; }
+/* Logo and name sit at the left edge of the sidebar, lined up with Collapse and the menu below */
+@media (min-width: 993px) {
+  html.mw-theme .m-brand > .m-stack { display: flex !important; align-items: center; height: 100%; }
+  html.mw-theme .m-brand .m-brand__logo { display: flex !important; align-items: center; justify-content: flex-start; text-align: left !important; padding: 0 0 0 16px !important; width: 100%; }
+  html.mw-theme .m-brand .m-brand__tools { display: none !important; }
+  html.mw-theme.mw-side-collapsed .m-brand .m-brand__logo { justify-content: center; padding: 0 !important; }
+}
 @media (min-width: 993px) {
   html.mw-theme .m-aside-left, html.mw-theme .m-brand { width: var(--side-w) !important; }
   html.mw-theme .m-body { padding-left: var(--side-w) !important; }
