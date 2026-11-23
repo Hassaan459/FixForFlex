@@ -40,13 +40,9 @@
       const a = col.avg != null ? num(txt(cells[col.avg])) : NaN;
       if (Number.isFinite(w)) r.weight += w;
       if (!(Number.isFinite(t) && t > 0)) return;
-      // "-" with a class average = assessment held, no marks for you (absent): counts as 0.
-      if (!Number.isFinite(o) && Number.isFinite(a)) {
-        o = 0;
-        const c = cells[col.obtained];
-        if (c && !c.querySelector(".mw-absent")) c.innerHTML = '<span class="mw-absent">Absent</span>';
-      }
-      if (!Number.isFinite(o)) return; // not graded yet
+      // "-" (or blank) is shown exactly as FLEX shows it. It can mean absent, but also marks not
+      // entered yet or a late upload, so we never label it "Absent" and never count it as 0.
+      if (!Number.isFinite(o)) return;
       r.rawObt += o; r.rawOut += t;
       if (Number.isFinite(a)) { r.rawClass += a; r.rawClassOut += t; }
       if (!Number.isFinite(w)) return;

@@ -1,6 +1,5 @@
 /* Marks Watcher: marks page pieces, in the Academic print style. */
 .mw-hide { display: none !important; }
-.mw-absent { color: var(--bad) !important; font-weight: 600; }
 .mw-sum { margin-left: auto; font-family: var(--sans) !important; font-size: 15px; font-weight: 400; color: var(--ink-2); font-variant-numeric: tabular-nums; }
 .mw-sum b { font-weight: 600; color: var(--ink) !important; }
 .mw-of { color: var(--ink-3) !important; font-weight: 400; }
