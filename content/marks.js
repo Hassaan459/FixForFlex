@@ -73,7 +73,12 @@
       r.weight = flexW;
       r.earned = Number.isFinite(flexO) ? flexO : 0;
       r.gradedWeight = Number.isFinite(flexO) ? flexW : 0;
-      r.classEarned = 0; r.classWeight = 0;
+      // Class average: FLEX's Total row doesn't give one, so use the average share of marks the class
+      // got on the graded rows, applied to FLEX's section weight. For "best of N" sections this
+      // averages every assessment, which is the closest we can get from the per-row averages.
+      const classFrac = r.classWeight ? r.classEarned / r.classWeight : NaN;
+      if (Number.isFinite(classFrac) && r.gradedWeight) { r.classEarned = classFrac * r.gradedWeight; r.classWeight = r.gradedWeight; }
+      else { r.classEarned = 0; r.classWeight = 0; }
       r.fromFlex = true;
       foot.classList.add("mw-total-row");
     }
@@ -276,6 +281,8 @@
       if (d) ["CLASS_AVG", "CLASS_MIN", "CLASS_MAX", "CLASS_STD"].forEach((k) => {
         const v = parseFloat(d[k]); d[k] = Number.isFinite(v) ? v : NaN; // server sometimes sends strings or null
       });
+      // Before FLEX publishes the stats it can answer with all zeros: treat that as "no data".
+      if (d && [d.CLASS_AVG, d.CLASS_MIN, d.CLASS_MAX].every((v) => !Number.isFinite(v) || v === 0)) d = null;
       const mm = tbody.querySelector(".mw-minmax");
       if (!d || !(Number.isFinite(d.CLASS_MIN) || Number.isFinite(d.CLASS_MAX))) { if (mm) { mm.classList.add("mw-dim"); mm.querySelector(".mw-n").textContent = "Not published by FLEX yet"; } }
       if (!d) return;
