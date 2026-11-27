@@ -4,6 +4,8 @@ A Chrome extension that cleans up the FAST-NU FLEX student portal. It's unoffici
 
 - A readable theme for every FLEX page, in light and dark mode
 - Correct course totals and grand totals on the Marks page
+- Older semesters in the Marks page's semester list, which FLEX leaves out
+- An All semesters page (toolbar popup) with every semester's marks so far, per course
 - Absences left per course on the Attendance page
 - What-if SGPA/CGPA, target CGPA and retakes on the Transcript page
 - One-click answers on course feedback forms (you still review and submit)
@@ -39,7 +41,7 @@ FLEX signs you out after a while. With your roll number and password saved, FixF
 - `manifest.json`: the extension manifest
 - `background.js`: notifications, signing in again and the update check
 - `content/`: per-page scripts and styles for flexstudent.nu.edu.pk
-- `ui/`: the toolbar popup
+- `ui/`: the toolbar popup and the All semesters page
 - `offscreen/`: the hidden page used to sign in again in the background
 - `fonts/`: bundled web fonts (see `fonts/LICENSE.txt`)
 
