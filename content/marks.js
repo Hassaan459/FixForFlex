@@ -143,7 +143,8 @@
 
   async function fetchOfficial(courseId) {
     const semSel = document.getElementById("SemId");
-    const semId = (semSel && semSel.value) || new URLSearchParams(location.search).get("semid");
+    // The URL wins: FLEX opens older terms by ?semid= while its list still shows the latest one.
+    const semId = new URLSearchParams(location.search).get("semid") || (semSel && semSel.value);
     if (!courseId || !semId) return null;
     try {
       const res = await fetch("/Student/GetClassAvg", {

@@ -1,0 +1,30 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All semesters · FixForFlex</title>
+  <link rel="icon" href="../icons/icon32.png">
+  <link rel="stylesheet" href="ui.css">
+  <link rel="stylesheet" href="summary.css">
+  <script src="mode.js"></script>
+</head>
+<body>
+  <main>
+    <header>
+      <div>
+        <h1>All semesters</h1>
+        <div class="quiet small">Marks counted so far out of the weightage published, for every semester.</div>
+      </div>
+      <div class="actions">
+        <a class="btn" href="https://flexstudent.nu.edu.pk/Student/StudentMarks" target="_blank" rel="noopener">Open FLEX marks</a>
+        <button type="button" class="btn primary" id="refresh">Refresh</button>
+      </div>
+    </header>
+    <div id="stats" class="stats"></div>
+    <div id="content"></div>
+    <p class="quiet small" id="note"></p>
+  </main>
+  <script src="summary.js"></script>
+</body>
+</html>

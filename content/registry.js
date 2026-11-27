@@ -275,5 +275,15 @@ const FFX_CONTENT_SCRIPTS = [
     ],
     "runAt": "document_end",
     "allFrames": true
+  },
+  {
+    "id": "ffx-24",
+    "matches": [
+      "https://flexstudent.nu.edu.pk/Student/StudentMarks*"
+    ],
+    "js": [
+      "content/semesters.js"
+    ],
+    "runAt": "document_end"
   }
 ];
