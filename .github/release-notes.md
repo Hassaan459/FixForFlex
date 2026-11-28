@@ -1,6 +1,7 @@
 **New in 1.1**
 
 - Marks: "best of" sections (for example best 7 of 11 quizzes) now show FLEX's own totals, so the section total and the grand total match FLEX exactly.
+- Marks: the class average on the grand total is back (it showed '-' when FLEX hadn't published class stats).
 - Checks for updates once a week and shows a **NEW** badge on the icon when one is out.
 
 **Install (Chrome or Edge)**
